@@ -32,6 +32,10 @@
   "matrix": {
     "category": ["Network"]
   },
+  "n8n": {
+    "category": ["Productivity"],
+    "note": "On MOS: n8n runs as user 1000 and cannot write to a folder that is created for it as root. Before the first start, open the MOS terminal and run: mkdir -p /mnt/cache/appdata/n8n/files && chown -R 1000:1000 /mnt/cache/appdata/n8n"
+  },
   "opencloud": {
     "category": ["Hosting", "Productivity"]
   },
@@ -41,6 +45,12 @@
   "prusaslicer": {
     "category": ["Productivity"]
   },
+  "rustfs": {
+    "category": ["Backup", "Hosting"],
+    "set": {
+      "extra_parameters": "--restart=unless-stopped --user 0:0"
+    }
+  },
   "seafile": {
     "category": ["Hosting", "Productivity"]
   },
@@ -49,6 +59,12 @@
   },
   "securo": {
     "category": ["Productivity"]
+  },
+  "silo": {
+    "category": ["Backup", "Hosting"],
+    "set": {
+      "extra_parameters": "--restart=unless-stopped"
+    }
   },
   "standardnotes-webui": {
     "category": ["Productivity"]

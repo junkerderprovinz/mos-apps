@@ -162,7 +162,7 @@ def convert(xml_path, overrides):
         "project": text(root, "Project"),
         "support": f"https://github.com/{repo}/issues" if repo else text(root, "Support"),
         "readme_url": text(root, "ReadMe"),
-        "description": overview(root),
+        "description": "\n\n".join(filter(None, [overrides.get("note"), overview(root)])),
         "donate": text(root, "DonateLink"),
         "requires": text(root, "Requires"),
         "paths": paths,

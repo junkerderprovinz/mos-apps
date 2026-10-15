@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/junkerderprovinz/mos-apps/actions/workflows/generate.yml"><img src="https://img.shields.io/github/actions/workflow/status/junkerderprovinz/mos-apps/generate.yml?branch=main&label=Generate&style=for-the-badge&logo=githubactions&logoColor=white" alt="Generate" height="36"></a>&nbsp;
-  <a href="#apps"><img src="https://img.shields.io/badge/Templates-21-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Templates" height="36"></a>&nbsp;
+  <a href="#apps"><img src="https://img.shields.io/badge/Templates-24-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Templates" height="36"></a>&nbsp;
   <a href="https://github.com/junkerderprovinz/mos-apps/commits/main"><img src="https://img.shields.io/github/last-commit/junkerderprovinz/mos-apps?branch=main&style=for-the-badge&logo=git&logoColor=white&label=Updated" alt="Last commit" height="36"></a>&nbsp;
   <a href="https://github.com/mos-nas/mos-releases"><img src="https://img.shields.io/badge/MOS-Hub-1a1a1a?style=for-the-badge&logoColor=white" alt="MOS Hub" height="36"></a>&nbsp;
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License" height="36"></a>
@@ -177,11 +177,35 @@ The HTTP/JSON document database behind Obsidian LiveSync, on the official 3.x im
 
 <br clear="all">
 
+<img src=".github/readme-icons/n8n.png" width="84" align="left" alt="n8n">
+<a href="https://github.com/junkerderprovinz/unraid-apps/blob/main/n8n/README.md"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**n8n**<br>
+Workflow automation connecting 400+ apps and APIs, on PostgreSQL by default, with every option exposed in the Unraid template form.
+
+<br clear="all">
+
+<img src=".github/readme-icons/rustfs.png" width="84" align="left" alt="RustFS">
+<a href="https://github.com/junkerderprovinz/unraid-apps/blob/main/rustfs/README.md"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**RustFS**<br>
+An S3 object store in Rust, with the two fixes it needs to run on Unraid at all. Pre-release: every version so far is a release candidate.
+
+<br clear="all">
+
 <img src=".github/readme-icons/seaweedfs.png" width="84" align="left" alt="SeaweedFS">
 <a href="https://github.com/junkerderprovinz/unraid-apps/blob/main/seaweedfs/README.md"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
 
 **SeaweedFS**<br>
 Fast, S3-API-compatible object store on the official image, the actively-maintained alternative now that MinIO's open edition is done.
+
+<br clear="all">
+
+<img src=".github/readme-icons/silo.png" width="84" align="left" alt="Silo">
+<a href="https://github.com/junkerderprovinz/unraid-apps/blob/main/silo/README.md"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**Silo**<br>
+MinIO, still maintained: PGSTY's fork of the open-source server, with the full web console. It reads an existing MinIO data folder as it is.
 
 <br clear="all">
 
@@ -219,6 +243,7 @@ The templates are built from the Unraid templates in [unraid-apps](https://githu
 - There is no `TZ` field, because MOS passes the system timezone to every container.
 - Mounts drop Unraid's `slave` propagation, which Docker refuses on MOS.
 - Optional paths and ports that the Unraid template leaves empty are left out, because MOS refuses an empty host field.
+- MOS creates a missing appdata folder as root. Silo runs without Unraid's `--user 99:100` and RustFS as root, so they can write to it; n8n says in its description which `chown` to run before the first start.
 
 To change a template, edit it in unraid-apps, not the files in `docker/`, `images/`, `.github/readme-icons/` or the app list in this README. A workflow here rebuilds them every night. To build them by hand:
 
@@ -226,7 +251,7 @@ To change a template, edit it in unraid-apps, not the files in `docker/`, `image
 python3 tools/generate.py ../unraid-apps
 ```
 
-`apps.json` lists the apps that get a MOS template and their hub categories, and can set a different default for a host path under `paths`.
+`apps.json` lists the apps that get a MOS template and their hub categories. Per app it can also set a different host path default (`paths`), replace a template field (`set`) or put a MOS note in front of the description (`note`).
 
 
 ## How AI is used here

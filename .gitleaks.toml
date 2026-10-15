@@ -1,10 +1,11 @@
 [extend]
 useDefault = true
 
-# The CouchDB setup steps in its description show `curl -u admin:PASS` with a
-# placeholder, not a credential.
+# Templates name their environment variables under "key", which the generic
+# key rule reads as a secret, and the CouchDB setup steps show `curl -u
+# admin:PASS` with a placeholder.
 [[allowlists]]
-description = "placeholder credentials in template descriptions"
+description = "variable names and placeholders in templates"
 condition = "AND"
-paths = ['''^docker/couchdb\.json$''']
-regexes = ['''-u admin:PASS\b''']
+paths = ['''^docker/[^/]+\.json$''']
+regexes = ['''^[A-Z][A-Z0-9_]*$''', '''^admin:PASS$''']
