@@ -1,9 +1,9 @@
 name: Generate
 
-# docker/, images/ and the README icons are built from junkerderprovinz/unraid-apps. A pull
-# request only checks that they are current; main rebuilds them every night and
-# on demand, so a change to a feed template reaches the MOS Hub without a manual
-# step here.
+# docker/, images/, the README icons and the README's app list are built from
+# junkerderprovinz/unraid-apps. A pull request only checks that they are
+# current; main rebuilds them every night and on demand, so a change to a feed
+# template reaches the MOS Hub without a manual step here.
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           python3 tools/generate.py feed
-          git add docker images .github/readme-icons
+          git add docker images .github/readme-icons README.md
           if git diff --cached --quiet; then
             echo "templates are current"
             exit 0

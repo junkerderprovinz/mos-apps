@@ -28,14 +28,6 @@
       "mode": "rw",
       "description": "Persistent data: homeserver.yaml, media, signing keys. Do not delete it: that destroys the keys and breaks federation.",
       "required": true
-    },
-    {
-      "name": "TURN-TLS Certs",
-      "host": "/mnt/cache/appdata/matrix/certs",
-      "container": "/data/certs",
-      "mode": "ro",
-      "description": "Optional. Mount a folder containing fullchain.pem + privkey.pem to enable TURN-TLS on 5349.",
-      "required": false
     }
   ],
   "ports": [

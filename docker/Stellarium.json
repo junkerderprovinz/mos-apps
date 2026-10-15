@@ -1,0 +1,107 @@
+{
+  "name": "Stellarium",
+  "repo": "junkerderprovinz/stellarium:latest",
+  "registry": "https://hub.docker.com/r/junkerderprovinz/stellarium",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "bash",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --shm-size=1gb",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "https://[IP]:[PORT:3001]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/stellarium.png",
+  "category": [
+    "Utilities"
+  ],
+  "project": "https://stellarium.org/",
+  "support": "https://github.com/junkerderprovinz/stellarium/issues",
+  "readme_url": "https://github.com/junkerderprovinz/stellarium/blob/main/README.md",
+  "description": "Stellarium, the free, open-source desktop planetarium, on a Selkies web desktop. Explore a photorealistic real-time sky in your browser: no VNC client, no local install. There is no maintained browser-desktop build of the actual Stellarium application (\"Stellarium Web\" is a separate, much lighter reimplementation), so this fills a genuine gap: a modern Selkies (WebRTC) build of the real thing for amd64 and arm64.\r\n\r\nWhat you get:\r\n• The full Stellarium desktop app, streamed as H.264 video (Selkies) so panning the sky, zooming into a nebula and scrubbing through time stay smooth, the continuously-rendered workload where the old noVNC containers feel laggy.\r\n• Installed from Debian trixie's stellarium package, so it tracks Debian security updates.\r\n• Software-GL (Mesa llvmpipe) fallback so the sky renders even without a GPU; a passed-through GPU is used when present.\r\n• Your location, downloaded star catalogues, landscapes, plugins and screenshots persist under /config.\r\n\r\nNotes:\r\n• WebUI opens via HTTPS on port 3001 (self-signed cert, accept it once). The Selkies web client requires a secure connection, so open the WebUI directly ONLY over HTTPS (3001). Port 3000 (HTTP) is for a reverse proxy that terminates TLS in front of the container; opening it directly shows a \"requires a secure connection (HTTPS)\" error.\r\n• PUID/PGID default to 99/100 (nobody/users on Unraid).\r\n• Auth: leave \"WebUI Username\" and \"Password\" EMPTY to run without login. Set both to enable HTTP-basic auth on the WebUI. Recommended whenever the container is reachable beyond your LAN.\r\n• GPU: a passed-through GPU is used when present; otherwise it falls back to software rendering.\r\n\r\nSource on GitHub: https://github.com/junkerderprovinz/stellarium",
+  "donate": null,
+  "requires": null,
+  "paths": [
+    {
+      "name": "AppData (/config)",
+      "host": "/mnt/cache/appdata/stellarium",
+      "container": "/config",
+      "mode": "rw",
+      "description": "Persistent Stellarium data: your chosen location, downloaded star catalogues and DSO textures, landscapes, enabled plugins, screenshots and preferences (stored under /config/.stellarium).",
+      "required": true
+    }
+  ],
+  "ports": [
+    {
+      "name": "WebUI Port (HTTPS / Selkies)",
+      "host": "3001",
+      "container": "3001",
+      "protocol": "tcp",
+      "description": "HTTPS port of the Selkies WebUI (self-signed cert). This is the default WebUI, and HTTPS is required for clipboard support in the browser. Accept the self-signed certificate once.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "WebUI Port (HTTP / Selkies)",
+      "host": "3000",
+      "container": "3000",
+      "protocol": "tcp",
+      "description": "HTTP port of the Selkies WebUI. For a reverse proxy that terminates TLS in front of the container, NOT for direct browser access. The Selkies web client requires a secure context, so opening http://IP:3000 directly shows a 'requires a secure connection (HTTPS)' error. For direct access use the HTTPS port 3001.",
+      "required": false,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "WebUI Username",
+      "key": "CUSTOM_USER",
+      "value": null,
+      "description": "Optional. Username for HTTP-basic-auth on the WebUI. Leave EMPTY together with the password for no login. Set both fields to enable login (recommended outside trusted LANs).",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "WebUI Password",
+      "key": "PASSWORD",
+      "value": null,
+      "description": "Optional. Password for HTTP-basic-auth on the WebUI. Leave EMPTY together with the username for no login. STRONGLY recommended whenever the container is reachable from outside your LAN.",
+      "required": false,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "User ID (PUID)",
+      "key": "PUID",
+      "value": "500",
+      "description": "User-ID Stellarium runs as. Default 99 (nobody on Unraid).",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Group ID (PGID)",
+      "key": "PGID",
+      "value": "500",
+      "description": "Group-ID. Default 100 (users on Unraid).",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "UMASK",
+      "key": "UMASK",
+      "value": "000",
+      "description": "Permission mask for newly created files. The default 000 lets every container user read and write them, which is what you want when other containers touch the same shares. Set 022 or 077 for stricter permissions.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [],
+  "labels": []
+}

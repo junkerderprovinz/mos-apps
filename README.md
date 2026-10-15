@@ -7,17 +7,18 @@
 
 <p align="center">
   <a href="https://github.com/junkerderprovinz/mos-apps/actions/workflows/generate.yml"><img src="https://img.shields.io/github/actions/workflow/status/junkerderprovinz/mos-apps/generate.yml?branch=main&label=Generate&style=for-the-badge&logo=githubactions&logoColor=white" alt="Generate" height="36"></a>&nbsp;
-  <a href="#apps"><img src="https://img.shields.io/badge/Templates-4-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Templates" height="36"></a>&nbsp;
+  <a href="#apps"><img src="https://img.shields.io/badge/Templates-11-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Templates" height="36"></a>&nbsp;
   <a href="https://github.com/junkerderprovinz/mos-apps/commits/main"><img src="https://img.shields.io/github/last-commit/junkerderprovinz/mos-apps?branch=main&style=for-the-badge&logo=git&logoColor=white&label=Updated" alt="Last commit" height="36"></a>&nbsp;
   <a href="https://github.com/mos-nas/mos-releases"><img src="https://img.shields.io/badge/MOS-Hub-1a1a1a?style=for-the-badge&logoColor=white" alt="MOS Hub" height="36"></a>&nbsp;
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License" height="36"></a>
 </p>
 
 <p align="center">
-<b>MOS Hub</b> templates for junkerderprovinz's containers on <a href="https://github.com/mos-nas/mos-releases">MOS</a>, the modular server OS by ich777, grouped like the profile: <b>Apps</b> (my own software) and <b>Images</b> (my own image builds of third-party apps). One repository to add to the hub; each app's image and full source live in its own repository.
+<b>MOS Hub</b> templates for junkerderprovinz's containers on <a href="https://github.com/mos-nas/mos-releases">MOS</a>, the modular server OS by ich777, grouped like the profile: <b>Apps</b> (my own software), <b>Images</b> (my own image builds of third-party apps) and <b>Wrappers</b> (thin templates over an upstream image). One repository to add to the hub; each app's image and full source live in its own repository.
 </p>
 
 
+<!-- apps:start -->
 ## Apps
 
 *My own software, built and published by junkerderprovinz. Full docs live in each app's own repository.*
@@ -30,16 +31,56 @@ Two-way file sync that shows you the plan before it touches a file, sends deleti
 
 <br clear="all">
 
+<img src=".github/readme-icons/featherdrop.png" width="84" align="left" alt="featherdrop">
+<a href="https://github.com/junkerderprovinz/featherdrop#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**featherdrop**<br>
+Your own private WeTransfer: feather-light, login-free, end-to-end encrypted file sharing with self-expiring share links.
+
+<br clear="all">
+
+<img src=".github/readme-icons/trickwork.png" width="84" align="left" alt="TrickWork">
+<a href="https://github.com/junkerderprovinz/trickwork#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**TrickWork**<br>
+Turns images into proportional-font-aware ASCII art - a rebuild of ASCII Gen 2, picking characters by real ink coverage, not brightness.
+
+<br clear="all">
+
 
 ## Images
 
 *My own custom image builds of third-party apps. Full docs in each app's own repository.*
+
+<img src=".github/readme-icons/excalidraw.png" width="84" align="left" alt="Excalidraw">
+<a href="https://github.com/junkerderprovinz/excalidraw#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**Excalidraw**<br>
+The hand-drawn whiteboard, built so it keeps to itself: shared links, live collaboration, the session scene and even the fonts all come from your own server.
+
+<br clear="all">
+
+<img src=".github/readme-icons/garage.png" width="84" align="left" alt="Garage">
+<a href="https://github.com/junkerderprovinz/garage#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**Garage**<br>
+Garage's S3-compatible object store and its web admin panel in one container, with the single-node layout and S3 keys created automatically.
+
+<br clear="all">
 
 <img src=".github/readme-icons/jdownloader.png" width="84" align="left" alt="JDownloader">
 <a href="https://github.com/junkerderprovinz/jdownloader#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
 
 **JDownloader**<br>
 JDownloader 2 with a complete, sleek dark UI out of the box, on a fast Selkies web desktop in your browser. No VNC client, no install.
+
+<br clear="all">
+
+<img src=".github/readme-icons/juicefs.png" width="84" align="left" alt="JuiceFS">
+<a href="https://github.com/junkerderprovinz/juicefs#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**JuiceFS**<br>
+The JuiceFS S3 gateway, with the file system created on first boot. Metadata goes to a database, file contents to an object store.
 
 <br clear="all">
 
@@ -55,9 +96,31 @@ Twin-pane KDE file manager with a native dark theme on a fast Selkies web deskto
 <a href="https://github.com/junkerderprovinz/matrix#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
 
 **Matrix**<br>
-A complete Matrix homeserver in one container: Synapse, coturn, Element Web and the Ketesa admin UI, with optional TURN over TLS. It needs a PostgreSQL database.
+A complete Matrix homeserver in one container: Synapse, coturn, Element Web and the Ketesa admin UI, with optional TURN over TLS.
 
 <br clear="all">
+
+<img src=".github/readme-icons/stellarium.png" width="84" align="left" alt="Stellarium">
+<a href="https://github.com/junkerderprovinz/stellarium#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**Stellarium**<br>
+The Stellarium planetarium in your browser on a fast Selkies web desktop: pan the sky, zoom a nebula, scrub through time, no VNC client.
+
+<br clear="all">
+
+
+## Wrappers
+
+*Thin templates over a third-party upstream image (no custom build). Full docs in each app's folder below.*
+
+<img src=".github/readme-icons/seaweedfs.png" width="84" align="left" alt="SeaweedFS">
+<a href="https://github.com/junkerderprovinz/unraid-apps/blob/main/seaweedfs/README.md"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**SeaweedFS**<br>
+Fast, S3-API-compatible object store on the official image, the actively-maintained alternative now that MinIO's open edition is done.
+
+<br clear="all">
+<!-- apps:end -->
 
 
 ## Install
@@ -75,14 +138,15 @@ The templates are built from the Unraid templates in [unraid-apps](https://githu
 - `PUID` and `PGID` are `500`, the MOS default user.
 - There is no `TZ` field, because MOS passes the system timezone to every container.
 - Mounts drop Unraid's `slave` propagation, which Docker refuses on MOS.
+- Optional paths and ports that the Unraid template leaves empty are left out, because MOS refuses an empty host field.
 
-To change a template, edit it in unraid-apps, not the files in `docker/`, `images/` or `.github/readme-icons/`. A workflow here rebuilds them every night. To build them by hand:
+To change a template, edit it in unraid-apps, not the files in `docker/`, `images/`, `.github/readme-icons/` or the app list in this README. A workflow here rebuilds them every night. To build them by hand:
 
 ```sh
 python3 tools/generate.py ../unraid-apps
 ```
 
-`apps.json` lists the apps that get a MOS template, their hub categories and the host paths that need a different default on MOS. MOS fills an empty host path with a folder of its own choosing, so an optional mount gets one here.
+`apps.json` lists the apps that get a MOS template and their hub categories, and can set a different default for a host path under `paths`.
 
 
 ## How AI is used here

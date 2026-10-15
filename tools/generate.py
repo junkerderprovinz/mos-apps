@@ -17,6 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW = "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main"
+FEED_URL = "https://github.com/junkerderprovinz/unraid-apps"
 
 # MOS has no user share. Appdata lives on a pool, and its docs ask templates to
 # point at /mnt/cache so they work the same on every install.
@@ -89,6 +90,11 @@ def convert(xml_path, overrides):
         required = boolean(config.get("Required"))
         value = config_value(config)
 
+        # An empty optional path or port means "not mapped" on Unraid; MOS
+        # refuses an empty host field, so the entry is left out instead.
+        if kind in ("Path", "Port") and not value and not required:
+            continue
+
         if kind == "Path":
             paths.append({
                 "name": name,
@@ -159,6 +165,37 @@ def convert(xml_path, overrides):
     return template
 
 
+def readme_cards(feed, apps):
+    """Return the README's app section, built from the cards in the feed README.
+
+    Each app keeps the card, description and group (Apps, Images, Wrappers) it
+    has in unraid-apps, so the two READMEs cannot drift apart.
+    """
+    source = (feed / "README.md").read_text(encoding="utf-8")
+    groups = {}
+    for app in apps:
+        start = source.index(f'<img src=".github/readme-icons/{app}.png"')
+        end = source.index('<br clear="all">', start) + len('<br clear="all">')
+        heading = list(re.finditer(r"^## (\w+)\n\n(\*.+\*)$", source[:start], re.M))[-1]
+        # A wrapper's README lives in its folder in unraid-apps.
+        card = re.sub(r'href="([\w-]+/README\.md)"', rf'href="{FEED_URL}/blob/main/\1"', source[start:end])
+        groups.setdefault(heading.group(1), (heading.group(2), []))[1].append(card)
+    order = [h for h in ("Apps", "Images", "Wrappers") if h in groups]
+    parts = [f"## {h}\n\n{groups[h][0]}\n\n" + "\n\n".join(groups[h][1]) for h in order]
+    return "\n\n\n".join(parts)
+
+
+def readme(current, feed, apps):
+    body = readme_cards(feed, apps)
+    current = re.sub(
+        r"(<!-- apps:start -->\n).*?(<!-- apps:end -->)",
+        lambda m: m.group(1) + body + "\n" + m.group(2),
+        current,
+        flags=re.S,
+    )
+    return re.sub(r"badge/Templates-\d+-", f"badge/Templates-{len(apps)}-", current)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build the MOS Hub templates from unraid-apps.")
     parser.add_argument("feed", type=Path, help="checkout of junkerderprovinz/unraid-apps")
@@ -180,6 +217,9 @@ def main():
         wanted[f".github/readme-icons/{app}.png"] = (
             args.feed / ".github" / "readme-icons" / f"{app}.png"
         ).read_bytes()
+    wanted["README.md"] = readme(
+        (ROOT / "README.md").read_text(encoding="utf-8"), args.feed, apps
+    ).encode("utf-8")
 
     stale = []
     for name, content in wanted.items():

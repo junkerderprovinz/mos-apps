@@ -2,16 +2,34 @@
   "arrowloop": {
     "category": ["Backup", "Utilities"]
   },
+  "excalidraw": {
+    "category": ["Productivity"]
+  },
+  "featherdrop": {
+    "category": ["Utilities", "Productivity"]
+  },
+  "garage": {
+    "category": ["Backup", "Hosting"]
+  },
   "jdownloader": {
     "category": ["Downloader"]
+  },
+  "juicefs": {
+    "category": ["Backup", "Hosting"]
   },
   "krusader": {
     "category": ["Productivity", "Utilities"]
   },
   "matrix": {
-    "category": ["Network"],
-    "paths": {
-      "/data/certs": "/mnt/cache/appdata/matrix/certs"
-    }
+    "category": ["Network"]
+  },
+  "seaweedfs": {
+    "category": ["Backup", "Hosting"]
+  },
+  "stellarium": {
+    "category": ["Utilities"]
+  },
+  "trickwork": {
+    "category": ["Media", "Utilities"]
   }
 }
