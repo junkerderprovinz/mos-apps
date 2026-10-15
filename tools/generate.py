@@ -177,6 +177,9 @@ def main():
             json.dumps(template, indent=2, ensure_ascii=False) + "\n"
         ).encode("utf-8")
         wanted[f"images/{app}.png"] = (args.feed / app / "icon.png").read_bytes()
+        wanted[f".github/readme-icons/{app}.png"] = (
+            args.feed / ".github" / "readme-icons" / f"{app}.png"
+        ).read_bytes()
 
     stale = []
     for name, content in wanted.items():
@@ -184,9 +187,11 @@ def main():
         if not target.exists() or target.read_bytes() != content:
             stale.append(name)
             if not args.check:
-                target.parent.mkdir(exist_ok=True)
+                target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(content)
-    present = [p for d in ("docker", "images") for p in (ROOT / d).glob("*") if p.is_file()]
+    present = [
+        p for d in ("docker", "images", ".github/readme-icons") for p in (ROOT / d).glob("*") if p.is_file()
+    ]
     for leftover in sorted(p.relative_to(ROOT).as_posix() for p in present):
         if leftover not in wanted:
             stale.append(leftover)

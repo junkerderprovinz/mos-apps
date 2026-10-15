@@ -1,25 +1,73 @@
-# MOS Hub templates
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.png">
+    <img src=".github/assets/banner.png" alt="MOS Hub templates: one hub to rule them all" width="100%">
+  </picture>
+</p>
 
-Templates for running junkerderprovinz's containers on [MOS](https://github.com/mos-nas/mos-releases), the modular server OS by ich777.
+<p align="center">
+  <a href="https://github.com/junkerderprovinz/mos-apps/actions/workflows/generate.yml"><img src="https://img.shields.io/github/actions/workflow/status/junkerderprovinz/mos-apps/generate.yml?branch=main&label=Generate&style=for-the-badge&logo=githubactions&logoColor=white" alt="Generate" height="36"></a>&nbsp;
+  <a href="#apps"><img src="https://img.shields.io/badge/Templates-4-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Templates" height="36"></a>&nbsp;
+  <a href="https://github.com/junkerderprovinz/mos-apps/commits/main"><img src="https://img.shields.io/github/last-commit/junkerderprovinz/mos-apps?branch=main&style=for-the-badge&logo=git&logoColor=white&label=Updated" alt="Last commit" height="36"></a>&nbsp;
+  <a href="https://github.com/mos-nas/mos-releases"><img src="https://img.shields.io/badge/MOS-Hub-1a1a1a?style=for-the-badge&logoColor=white" alt="MOS Hub" height="36"></a>&nbsp;
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License" height="36"></a>
+</p>
 
-## Add this repository to MOS
+<p align="center">
+<b>MOS Hub</b> templates for junkerderprovinz's containers on <a href="https://github.com/mos-nas/mos-releases">MOS</a>, the modular server OS by ich777, grouped like the profile: <b>Apps</b> (my own software) and <b>Images</b> (my own image builds of third-party apps). One repository to add to the hub; each app's image and full source live in its own repository.
+</p>
 
-1. Open **Settings**, **System Configuration**, **MOS Hub Settings**.
-2. Add `https://github.com/junkerderprovinz/mos-apps` to the repository list.
-3. Refresh the hub. The apps show up next to the ones from the other repositories.
 
 ## Apps
 
-| App | What it is |
-| --- | --- |
-| [ArrowLoop](https://github.com/junkerderprovinz/arrowloop) | Two-way file sync that shows every planned change before it touches a file |
-| [JDownloader](https://github.com/junkerderprovinz/jdownloader) | JDownloader 2 with a dark interface in the browser |
-| [Krusader](https://github.com/junkerderprovinz/krusader) | The Krusader twin-panel file manager in the browser |
-| [Matrix](https://github.com/junkerderprovinz/matrix) | Synapse, coturn and Element in one container (needs a PostgreSQL database) |
+*My own software, built and published by junkerderprovinz. Full docs live in each app's own repository.*
 
-Questions and bugs go to the issue tracker of the app's own repository.
+<img src=".github/readme-icons/arrowloop.png" width="84" align="left" alt="ArrowLoop">
+<a href="https://github.com/junkerderprovinz/arrowloop#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
 
-## How the templates differ from the Unraid ones
+**ArrowLoop**<br>
+Two-way file sync that shows you the plan before it touches a file, sends deletions to a trash and stops a run that would delete too much.
+
+<br clear="all">
+
+
+## Images
+
+*My own custom image builds of third-party apps. Full docs in each app's own repository.*
+
+<img src=".github/readme-icons/jdownloader.png" width="84" align="left" alt="JDownloader">
+<a href="https://github.com/junkerderprovinz/jdownloader#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**JDownloader**<br>
+JDownloader 2 with a complete, sleek dark UI out of the box, on a fast Selkies web desktop in your browser. No VNC client, no install.
+
+<br clear="all">
+
+<img src=".github/readme-icons/krusader.png" width="84" align="left" alt="Krusader">
+<a href="https://github.com/junkerderprovinz/krusader#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**Krusader**<br>
+Twin-pane KDE file manager with a native dark theme on a fast Selkies web desktop, with Kate, krename and RAR built in.
+
+<br clear="all">
+
+<img src=".github/readme-icons/matrix.png" width="84" align="left" alt="Matrix">
+<a href="https://github.com/junkerderprovinz/matrix#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+
+**Matrix**<br>
+A complete Matrix homeserver in one container: Synapse, coturn, Element Web and the Ketesa admin UI, with optional TURN over TLS. It needs a PostgreSQL database.
+
+<br clear="all">
+
+
+## Install
+
+On MOS: open **Settings**, **System Configuration**, **MOS Hub Settings**, add `https://github.com/junkerderprovinz/mos-apps` to the repositories and refresh the hub. The apps then show up in the **MOS Hub** next to the ones from the other repositories.
+
+Questions and bugs go to the issue tracker of the app's own repository; every template links it under **Support**.
+
+
+## How these differ from the Unraid templates
 
 The templates are built from the Unraid templates in [unraid-apps](https://github.com/junkerderprovinz/unraid-apps), with the changes MOS needs:
 
@@ -28,15 +76,14 @@ The templates are built from the Unraid templates in [unraid-apps](https://githu
 - There is no `TZ` field, because MOS passes the system timezone to every container.
 - Mounts drop Unraid's `slave` propagation, which Docker refuses on MOS.
 
-## Changing a template
-
-Edit the template in unraid-apps, not the files in `docker/` or `images/`. A workflow here rebuilds them every night. To build them by hand:
+To change a template, edit it in unraid-apps, not the files in `docker/`, `images/` or `.github/readme-icons/`. A workflow here rebuilds them every night. To build them by hand:
 
 ```sh
 python3 tools/generate.py ../unraid-apps
 ```
 
 `apps.json` lists the apps that get a MOS template, their hub categories and the host paths that need a different default on MOS. MOS fills an empty host path with a folder of its own choosing, so an optional mount gets one here.
+
 
 ## How AI is used here
 
