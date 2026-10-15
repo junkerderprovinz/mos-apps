@@ -36,4 +36,4 @@ Edit the template in unraid-apps, not the files in `docker/`. A workflow here re
 python3 tools/generate.py ../unraid-apps
 ```
 
-`apps.json` lists the apps that get a MOS template and their hub categories.
+`apps.json` lists the apps that get a MOS template, their hub categories and the host paths that need a different default on MOS. MOS fills an empty host path with a folder of its own choosing, so an optional mount gets one here.

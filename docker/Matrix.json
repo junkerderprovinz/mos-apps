@@ -31,7 +31,7 @@
     },
     {
       "name": "TURN-TLS Certs",
-      "host": "",
+      "host": "/mnt/cache/appdata/matrix/certs",
       "container": "/data/certs",
       "mode": "ro",
       "description": "Optional. Mount a folder containing fullchain.pem + privkey.pem to enable TURN-TLS on 5349.",

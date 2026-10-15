@@ -9,6 +9,9 @@
     "category": ["Productivity", "Utilities"]
   },
   "matrix": {
-    "category": ["Network"]
+    "category": ["Network"],
+    "paths": {
+      "/data/certs": "/mnt/cache/appdata/matrix/certs"
+    }
   }
 }

@@ -91,7 +91,7 @@ def convert(xml_path, overrides):
         if kind == "Path":
             paths.append({
                 "name": name,
-                "host": host_path(value),
+                "host": overrides.get("paths", {}).get(target, host_path(value)),
                 "container": target,
                 "mode": mount_mode(config.get("Mode")),
                 "description": description,
