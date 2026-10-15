@@ -1,0 +1,165 @@
+{
+  "name": "JDownloader",
+  "repo": "junkerderprovinz/jdownloader:latest",
+  "registry": "https://hub.docker.com/r/junkerderprovinz/jdownloader",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "bash",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --shm-size=1gb",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "https://[IP]:[PORT:3001]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/unraid-apps/main/jdownloader/icon.png",
+  "category": [
+    "Downloader"
+  ],
+  "project": "https://jdownloader.org",
+  "support": "https://github.com/junkerderprovinz/jdownloader/issues",
+  "readme_url": "https://github.com/junkerderprovinz/jdownloader/blob/main/README.md",
+  "description": "JDownloader 2 with a dark mode GUI and full clipboard support out of the box. The download list, link grabber and settings are all dark, and everything runs on a hardware-accelerated Selkies web desktop. It looks like this from the first start, without tweaking or add-ons.\r\n\r\nWhat's pre-configured:\r\n• Full dark mode by default: JD Plain Dark (monochrome Carbon #161616) in a maximised kiosk window. Switch to a matching Light theme, or JDownloader's own classic look, via the Theme variable.\r\n• Installs and updates JDownloader by itself. The first-run install prompts are confirmed automatically, so there is nothing to click.\r\n• Seamless clipboard over HTTPS: copy on your PC, paste straight into JD.\r\n• Persistent config and downloads in /config and /downloads; hidden columns / layout survive a restart.\r\n\r\nNotes:\r\n• The first start takes a few minutes: JDownloader installs itself and its dark theme, and the WebUI stays black until that is done. Do not restart the container in the meantime, since that interrupts the install. Wait for the \"JDOWNLOADER IS READY\" banner in the container log, then open the WebUI.\r\n• WebUI opens via HTTPS (port 3001, self-signed cert, accept it once), because the clipboard needs HTTPS. Plain HTTP (3000) is also exposed.\r\n• Map /downloads to your download share. PUID/PGID default to 99/100 (nobody/users on Unraid).\r\n• Language: English by default. Change it any time in JDownloader's own language menu (Settings, the flag icon); your choice persists across restarts.\r\n• Auth: leave WebUI Username and Password empty for no login.\r\n\r\nSource on GitHub: https://github.com/junkerderprovinz/jdownloader",
+  "donate": null,
+  "requires": null,
+  "paths": [
+    {
+      "name": "AppData (/config)",
+      "host": "/mnt/cache/appdata/jdownloader",
+      "container": "/config",
+      "mode": "rw",
+      "description": "Persistent JDownloader install, configs, and session data.",
+      "required": true
+    },
+    {
+      "name": "Downloads (/downloads)",
+      "host": "/mnt/cache/downloads",
+      "container": "/downloads",
+      "mode": "rw",
+      "description": "Download target directory.",
+      "required": true
+    }
+  ],
+  "ports": [
+    {
+      "name": "WebUI Port (HTTP / Selkies)",
+      "host": "3000",
+      "container": "3000",
+      "protocol": "tcp",
+      "description": "Plain HTTP WebUI. Browsers block seamless clipboard over HTTP, so prefer HTTPS (3001).",
+      "required": false,
+      "mask": false
+    },
+    {
+      "name": "WebUI Port (HTTPS / Selkies)",
+      "host": "3001",
+      "container": "3001",
+      "protocol": "tcp",
+      "description": "HTTPS WebUI (self-signed TLS). The WebUI button opens this port, and seamless clipboard needs it.",
+      "required": true,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "Theme (JD_THEME)",
+      "key": "JD_THEME",
+      "value": "Dark",
+      "description": "Dark = monochrome Carbon #161616, Light = JD's light theme, JDDEFAULT = JDownloader's own classic look, jd-highlighter = borderless, freely-accented dark (pick the accent with JD_ACCENT below).",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Accent (JD_ACCENT)",
+      "key": "JD_ACCENT",
+      "value": "#ffee00",
+      "description": "Accent colour for the jd-highlighter theme (any hex, e.g. #ffee00). Only applies when Theme is set to jd-highlighter. The accent lights up checkmarks, toggles, focus, the download progress bar and primary buttons; large fills stay neutral so text stays readable at any hue. Button/progress text is auto-contrasted (dark on a light accent, light on a dark accent).",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Self-Update (JD_SELFUPDATE)",
+      "key": "JD_SELFUPDATE",
+      "value": "true",
+      "description": "true (default) = JDownloader keeps updating itself. false = frozen appliance: disables JD's periodic self-update checks. Keep in mind that the same update channel delivers the hoster plugins, which go stale within weeks, so downloads may start failing. The first install always uses the updater.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "In-container browser for captchas (JD_ENABLE_BROWSER)",
+      "key": "JD_ENABLE_BROWSER",
+      "value": "auto",
+      "description": "auto (default) = remembers your last choice, so an enabled browser survives container updates (recreates). Set true to enable JDownloader's 'solve captcha in browser' flow: reCAPTCHA/hCaptcha/Turnstile open in a bundled Firefox (with uBlock Origin) on the web desktop and are solved with one click, from the container's own IP (tokens are IP-bound). The Firefox profile persists in /config/.config/mozilla. Set false to force it off. Only enable it if a hoster you use needs browser captchas. Classic image captchas are auto-solved either way, and enabling it runs a full browser, which costs more resources and adds attack surface.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "WebUI Username",
+      "key": "CUSTOM_USER",
+      "value": null,
+      "description": "Optional. Username for HTTP-basic-auth. Leave it empty together with the password for no login.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "WebUI Password",
+      "key": "PASSWORD",
+      "value": null,
+      "description": "Optional. Password for HTTP-basic-auth.",
+      "required": false,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "User ID (PUID)",
+      "key": "PUID",
+      "value": "500",
+      "description": "User-ID JDownloader runs as. Default 99 (nobody on Unraid).",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Group ID (PGID)",
+      "key": "PGID",
+      "value": "500",
+      "description": "Group-ID. Default 100 (users on Unraid).",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "UMASK",
+      "key": "UMASK",
+      "value": "000",
+      "description": "Permission mask for newly created files. The default 000 lets every container user read and write them, which is what you want when other containers touch the same shares. Set 022 or 077 for stricter permissions.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "UI Scale (JD_UI_SCALE)",
+      "key": "JD_UI_SCALE",
+      "value": null,
+      "description": "Optional HiDPI scaling for the whole JDownloader UI (e.g. 1.5 or 2). Leave empty for 1x. On a streamed Selkies desktop, zooming the browser upscales the video stream and blurs the text; setting JD_UI_SCALE instead renders the UI larger at full pixel density, so text stays crisp at the desktop's native resolution with the browser at 100%. Restart the container after changing it.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [],
+  "labels": []
+}

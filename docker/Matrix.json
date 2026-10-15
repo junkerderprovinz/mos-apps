@@ -1,0 +1,478 @@
+{
+  "name": "Matrix",
+  "repo": "junkerderprovinz/matrix:latest",
+  "registry": "https://hub.docker.com/r/junkerderprovinz/matrix",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": null,
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/element/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/unraid-apps/main/matrix/icon.png?v=1",
+  "category": [
+    "Network"
+  ],
+  "project": "https://matrix.org",
+  "support": "https://github.com/junkerderprovinz/matrix/issues",
+  "readme_url": "https://github.com/junkerderprovinz/matrix/blob/main/README.md",
+  "description": "All-in-one Matrix homeserver for Unraid: Synapse, coturn, Element Web (/element/) and the Ketesa admin UI (/admin/).\n    Fill in SERVER_NAME and the Postgres connection; everything else is generated automatically.\n\n    Important, before the first start: set up the database and the proxy.\n\n    1) PostgreSQL database: connect to your Postgres container and run:\n       CREATE USER matrix WITH PASSWORD 'yourpass';\n       CREATE DATABASE matrix ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0 OWNER matrix;\n       UTF8 with LC_COLLATE='C' is required. Otherwise Synapse refuses to start, and a database created\n       with the defaults has to be created again.\n\n    2) Reverse proxy (Nginx Proxy Manager) for matrix.yourdomain.tld → Unraid-IP:8008, with WebSockets on.\n       In the proxy host → Advanced tab, add:\n         client_max_body_size 100M;\n         proxy_read_timeout 600s;\n         proxy_send_timeout 600s;\n         proxy_set_header X-Forwarded-For $remote_addr;\n         proxy_set_header X-Forwarded-Proto $scheme;\n         proxy_set_header Host $host;\n         proxy_http_version 1.1;\n         proxy_set_header Upgrade $http_upgrade;\n         proxy_set_header Connection \"upgrade\";\n       Without these, media uploads fail and syncing times out.\n\n    Federation discovery needs nothing extra: Synapse serves /.well-known/matrix/server and\n    /.well-known/matrix/client itself on port 8008, so the proxy host above covers them.\n    Step by step, with screenshots: https://github.com/junkerderprovinz/matrix/blob/main/docs/setup.md\n\n    Optional and off by default: delegated authentication via Matrix Authentication Service, which is what\n    makes QR code device linking (\"Link new device\" in Element) possible. Leave the Delegated Auth field\n    alone and the container behaves exactly as before. Enabling it needs a second empty Postgres database\n    and a second reverse-proxy host with HTTPS, and it changes how your users sign in. Read the section\n    \"Delegated Auth and QR Code Login\" in the setup guide first.",
+  "donate": null,
+  "requires": "An external PostgreSQL database (UTF8, LC_COLLATE=C) and a reverse proxy (e.g. Nginx Proxy Manager) with large-upload and long-timeout settings. See the documentation for the exact setup: https://github.com/junkerderprovinz/matrix#readme",
+  "paths": [
+    {
+      "name": "Data Directory",
+      "host": "/mnt/cache/appdata/matrix/",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Persistent data: homeserver.yaml, media, signing keys. Do not delete it: that destroys the keys and breaks federation.",
+      "required": true
+    },
+    {
+      "name": "TURN-TLS Certs",
+      "host": "",
+      "container": "/data/certs",
+      "mode": "ro",
+      "description": "Optional. Mount a folder containing fullchain.pem + privkey.pem to enable TURN-TLS on 5349.",
+      "required": false
+    }
+  ],
+  "ports": [
+    {
+      "name": "Matrix HTTP API",
+      "host": "8008",
+      "container": "8008",
+      "protocol": "tcp",
+      "description": "Synapse HTTP API. Expose it through a reverse proxy with HTTPS, not directly to the internet.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "Element Web + Synapse-Admin",
+      "host": "8080",
+      "container": "8080",
+      "protocol": "tcp",
+      "description": "Serves Element Web (/element/), Synapse-Admin (/admin/) and /.well-known/matrix/* endpoints.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "TURN TCP",
+      "host": "3478",
+      "container": "3478",
+      "protocol": "tcp",
+      "description": "TURN/STUN over TCP for voice/video calls. Open this port in your router/firewall.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "TURN UDP",
+      "host": "3478",
+      "container": "3478",
+      "protocol": "udp",
+      "description": "TURN/STUN over UDP for voice/video calls. Open this port in your router/firewall.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "TURN TLS TCP",
+      "host": "5349",
+      "container": "5349",
+      "protocol": "tcp",
+      "description": "TURN over TLS (TCP). Optional, only used when TLS certs are mounted.",
+      "required": false,
+      "mask": false
+    },
+    {
+      "name": "TURN TLS UDP",
+      "host": "5349",
+      "container": "5349",
+      "protocol": "udp",
+      "description": "TURN over TLS (UDP). Optional, only used when TLS certs are mounted.",
+      "required": false,
+      "mask": false
+    },
+    {
+      "name": "TURN relay ports (UDP)",
+      "host": "49160-49200",
+      "container": "49160-49200",
+      "protocol": "udp",
+      "description": "UDP relay port range for TURN (voice/video calls). Must match the container's coturn min-port/max-port.",
+      "required": false,
+      "mask": false
+    },
+    {
+      "name": "Prometheus Metrics",
+      "host": "9090",
+      "container": "9090",
+      "protocol": "tcp",
+      "description": "Prometheus metrics at /_synapse/metrics. Bind to a private network only.",
+      "required": false,
+      "mask": false
+    },
+    {
+      "name": "Auth Service (MAS)",
+      "host": "8090",
+      "container": "8090",
+      "protocol": "tcp",
+      "description": "Matrix Authentication Service. Only listens when Delegated Auth is set to true. Needs its own reverse-proxy host (e.g. auth.yourdomain.tld) with a certificate.",
+      "required": false,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "Matrix Server Domain",
+      "key": "SERVER_NAME",
+      "value": "matrix.yourdomain.tld",
+      "description": "Your Matrix domain, e.g. matrix.yourdomain.tld. Used in Matrix IDs (@user:matrix.yourdomain.tld). Cannot be changed later without wiping the DB.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Anonymous Usage Reporting",
+      "key": "REPORT_STATS",
+      "value": "no",
+      "description": "Send anonymous usage stats to Matrix.org. 'yes' or 'no'. Recommended: no.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Enable Federation",
+      "key": "ENABLE_FEDERATION",
+      "value": "true",
+      "description": "true = chat with the public Matrix network. The container serves /.well-known/matrix/* itself (serve_server_wellknown) as long as https://SERVER_NAME/ is routed to Synapse, so no extra proxy rule is needed. false = private island.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Enable Registration",
+      "key": "ENABLE_REGISTRATION",
+      "value": "false",
+      "description": "false = accounts created by the admin only (recommended). true = open self-service signup without verification (shows Element's Create Account button). Only enable it behind a CAPTCHA or on a trusted network, or you will get spam signups.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Delegated Auth (QR login)",
+      "key": "AUTH_ENABLED",
+      "value": "false",
+      "description": "false = normal Synapse logins (default, unchanged). true = start Matrix Authentication Service and delegate authentication to it, which is what makes QR code device linking possible. Switching this on is a one-way trip for existing accounts: they stay in Synapse until you run 'mas-cli syn2mas migrate', and after that only a database restore gets you back. Read the README section 'Delegated auth' first. It also needs its own reverse-proxy host and breaks encrypted bridges.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Auth Public URL",
+      "key": "AUTH_PUBLIC_BASE",
+      "value": null,
+      "description": "Required when Delegated Auth is true. Public https URL of the auth service, e.g. https://auth.yourdomain.tld/. Point a second reverse-proxy host at this container's port 8090. Must be https: the auth service rejects plain-http redirect URLs and Element's sign-in then fails.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Auth Database Name",
+      "key": "AUTH_POSTGRES_DB",
+      "value": null,
+      "description": "Required when Delegated Auth is true. Name of a separate, empty PostgreSQL database for the auth service, which cannot share Synapse's. Create it with: CREATE DATABASE mas TEMPLATE template0 ENCODING 'UTF8' LC_COLLATE 'C' LC_CTYPE 'C';",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Auth DB Host",
+      "key": "AUTH_POSTGRES_HOST",
+      "value": null,
+      "description": "Optional. Leave empty to reuse the PostgreSQL host above.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Auth DB User",
+      "key": "AUTH_POSTGRES_USER",
+      "value": null,
+      "description": "Optional. Leave empty to reuse the PostgreSQL user above.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Auth DB Password",
+      "key": "AUTH_POSTGRES_PASSWORD",
+      "value": null,
+      "description": "Optional. Leave empty to reuse the PostgreSQL password above.",
+      "required": false,
+      "mask": true,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Auth: allow registration",
+      "key": "AUTH_ALLOW_REGISTRATION",
+      "value": "false",
+      "description": "Only relevant when Delegated Auth is true. Self-service signup through the auth service's own web UI. Registration through Synapse is impossible under delegated auth, so this replaces Enable Registration.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Auth: migrate accounts (ONE WAY)",
+      "key": "AUTH_MIGRATE",
+      "value": "false",
+      "description": "Only relevant when Delegated Auth is true, and only needed once. true = migrate your existing Synapse accounts into the auth service on the next start, before Synapse comes up. Back up your database first, because this cannot be undone once anyone has signed in afterwards. Users keep their sessions and are not signed out. It refuses to run if the pre-flight check fails, and it never runs twice. You can leave it on true afterwards, it is a no-op once done.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Auth: QR code login",
+      "key": "AUTH_QR_LOGIN",
+      "value": "true",
+      "description": "Only relevant when Delegated Auth is true. Enables MSC4108 so Element offers 'Link new device' with a QR code. Leave on unless you have a reason not to.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 Media Storage",
+      "key": "S3_MEDIA_ENABLED",
+      "value": "false",
+      "description": "false = media stored on this container's own volume only (default, unchanged). true = also copy every new upload to an S3-compatible bucket (e.g. SeaweedFS, Garage). The local copy stays as a hot cache. Existing media is not migrated retroactively. Read the README section 'S3 Media Storage' first.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 Media Bucket",
+      "key": "S3_MEDIA_BUCKET",
+      "value": null,
+      "description": "Required when S3 Media Storage is true. Name of an S3 bucket that already exists on your backend.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 Media Endpoint",
+      "key": "S3_MEDIA_ENDPOINT",
+      "value": null,
+      "description": "Required when S3 Media Storage is true. Your S3-compatible endpoint URL, e.g. http://192.168.20.73:8333 for a local SeaweedFS S3 gateway. There is no default, because this targets a self-hosted backend, not AWS.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 Media Access Key",
+      "key": "S3_MEDIA_ACCESS_KEY_ID",
+      "value": null,
+      "description": "Required when S3 Media Storage is true. Access key for the bucket above.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 Media Secret Key",
+      "key": "S3_MEDIA_SECRET_ACCESS_KEY",
+      "value": null,
+      "description": "Required when S3 Media Storage is true. Secret key for the bucket above.",
+      "required": false,
+      "mask": true,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 Media Region",
+      "key": "S3_MEDIA_REGION",
+      "value": null,
+      "description": "Optional. Most self-hosted backends ignore this, but the S3 client library requires some value. Defaults to us-east-1 if left empty.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 Media Storage Class",
+      "key": "S3_MEDIA_STORAGE_CLASS",
+      "value": null,
+      "description": "Optional. Passed straight through to the bucket. Defaults to STANDARD if left empty.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "TURN Domain",
+      "key": "TURN_DOMAIN",
+      "value": null,
+      "description": "Optional. Public hostname clients reach TURN (voice/video) at. Leave empty to use SERVER_NAME; set a dedicated subdomain (e.g. turn.yourdomain.tld) to route TURN around a reverse proxy.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "TURN Port",
+      "key": "TURN_PORT",
+      "value": "3478",
+      "description": "Optional. Public TURN port advertised to clients (default 3478). Change only if you remapped the published TURN port.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "TURN External IP",
+      "key": "TURN_EXTERNAL_IP",
+      "value": null,
+      "description": "Your public IP, needed when the server sits behind a router with NAT (the usual home setup). Without it coturn hands out its private address as the relay address, and calls between networks fail even with the TURN ports forwarded. Leave it empty only if the server has a public IP of its own.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Element Call: LiveKit JWT service URL",
+      "key": "ELEMENT_CALL_LIVEKIT_SERVICE_URL",
+      "value": null,
+      "description": "Optional. Element X places every call through Element Call, which needs a LiveKit server and the LiveKit JWT service running as two more containers. Enter the public https URL of the JWT service, e.g. https://livekit-jwt.yourdomain.tld, and the container sets up Synapse and Element Web for it. See 'Element Call' in the setup guide.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "PostgreSQL Host",
+      "key": "POSTGRES_HOST",
+      "value": "192.168.1.10",
+      "description": "IP of your PostgreSQL server (e.g. Unraid host IP). 192.168.1.10 is a placeholder; replace it with your server's IP. An IP and port are more reliable than container names.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "PostgreSQL Port",
+      "key": "POSTGRES_PORT",
+      "value": "5432",
+      "description": "PostgreSQL port. Default 5432.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "PostgreSQL Username",
+      "key": "POSTGRES_USER",
+      "value": "matrix",
+      "description": "Postgres user for Synapse. Must already exist (see the Postgres setup in the README).",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "PostgreSQL Password",
+      "key": "POSTGRES_PASSWORD",
+      "value": null,
+      "description": "Password for the Postgres user above.",
+      "required": true,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "PostgreSQL Database",
+      "key": "POSTGRES_DB",
+      "value": "matrix",
+      "description": "Synapse database name. Must be created with ENCODING UTF8, LC_COLLATE='C', LC_CTYPE='C' (see Overview).",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Matrix Admin Username (Element / Synapse-Admin login)",
+      "key": "ADMIN_USER",
+      "value": null,
+      "description": "Optional. Localpart of the admin user to auto-create on first boot (e.g. 'admin' → @admin:SERVER_NAME). The account logs into Element Web and Synapse-Admin. Clear after creation.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Matrix Admin Password (Element / Synapse-Admin login)",
+      "key": "ADMIN_PASSWORD",
+      "value": null,
+      "description": "Optional. Password for the admin user above. Clear after first boot.",
+      "required": false,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Element Web: extra features",
+      "key": "ELEMENT_EXTRA_FEATURES",
+      "value": "{}",
+      "description": "Optional. JSON object merged into the features block (labs flags) of Element Web's config.json, e.g. {\"feature_html_topic\": true}. A value that is not valid JSON is ignored with a warning in the log.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Element Web: extra config",
+      "key": "ELEMENT_EXTRA_CONFIG",
+      "value": "{}",
+      "description": "Optional. JSON object merged into Element Web's config.json, e.g. {\"setting_defaults\": {\"language\": \"de_DE\"}} to start new sessions in German. Element Web otherwise follows the browser language. A value that is not valid JSON is ignored with a warning in the log.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "User ID (PUID)",
+      "key": "PUID",
+      "value": "500",
+      "description": "UID Synapse runs as. Default 99 (nobody on Unraid).",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Group ID (PGID)",
+      "key": "PGID",
+      "value": "500",
+      "description": "GID Synapse runs as. Default 100 (users on Unraid).",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [],
+  "labels": []
+}

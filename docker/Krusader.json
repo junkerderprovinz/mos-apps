@@ -1,0 +1,146 @@
+{
+  "name": "Krusader",
+  "repo": "junkerderprovinz/krusader:latest",
+  "registry": "https://hub.docker.com/r/junkerderprovinz/krusader",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "bash",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --shm-size=1gb",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "https://[IP]:[PORT:3001]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/unraid-apps/main/krusader/icon.png",
+  "category": [
+    "Productivity",
+    "Utilities"
+  ],
+  "project": "https://krusader.org",
+  "support": "https://github.com/junkerderprovinz/krusader/issues",
+  "readme_url": "https://github.com/junkerderprovinz/krusader/blob/main/README.md",
+  "description": "Krusader file manager with native Dark Mode, running on a hardware-accelerated Selkies web desktop. It responds much faster than the noVNC-based Krusader containers (binhex / jlesage / ich777).\r\n\r\nWhat's pre-configured:\r\n• Dark Mode theme for Krusader, Kate and KDE\r\n• Kate as Krusader's external editor\r\n• Kompare for \"File → Compare by Content\" (side-by-side diff)\r\n• Closing Krusader in the browser starts a fresh one instead of a black screen\r\n• RAR support: right-click → \"Extract RAR here\" / \"to subfolder\"\r\n• 7z, ZIP, TAR, GZ, BZ2, XZ, LHA, ARJ, ACE, RPM, CPIO\r\n• Selectable UI language: 33 languages incl. German, English, French, Spanish, Italian, Portuguese (PT/BR), Dutch, Catalan, Basque, Irish, Danish, Swedish, Norwegian, Finnish, Icelandic, Polish, Czech, Slovak, Hungarian, Romanian, Slovenian, Croatian, Serbian, Bulgarian, Ukrainian, Russian, Greek, Turkish, Hebrew, Arabic, Japanese, Korean, Chinese (CN/TW)\r\n• Spell-checking in Kate for ~25 languages via Hunspell\r\n\r\nNotes:\r\n• The /storage volume defaults to /mnt, which gives Krusader access to all shares (/mnt/user) and individual disks (/mnt/disk*).\r\n• WebUI opens via HTTPS on port 3001 (self-signed cert, accept it once). The Selkies web client requires a secure connection, so open the WebUI directly over HTTPS (3001) only. Port 3000 (HTTP) is for a reverse proxy that terminates TLS in front of the container. Opened directly in a browser, it shows a \"requires a secure connection (HTTPS)\" error and does not load.\r\n• PUID/PGID default to 99/100 (nobody/users on Unraid).\r\n• Memory: the desktop follows your browser window, so there is no screen size to set and RAM only grows with the window you actually use.\r\n• Auth: leave \"WebUI Username\" and \"Password\" empty to run without login. Set both to enable HTTP-basic auth on the WebUI, which is recommended whenever the container is reachable from anything beyond your LAN.\r\n\r\nSource on GitHub: https://github.com/junkerderprovinz/krusader",
+  "donate": null,
+  "requires": null,
+  "paths": [
+    {
+      "name": "AppData (/config)",
+      "host": "/mnt/cache/appdata/krusader",
+      "container": "/config",
+      "mode": "rw",
+      "description": "Persistent Krusader configs, history, bookmarks, default-files lock.",
+      "required": true
+    },
+    {
+      "name": "Storage (/storage)",
+      "host": "/mnt",
+      "container": "/storage",
+      "mode": "rw",
+      "description": "Main path for file operations. Default /mnt gives access to all shares (/mnt/user) and individual disks (/mnt/disk*). Adjust if you only need specific shares.",
+      "required": true
+    }
+  ],
+  "ports": [
+    {
+      "name": "WebUI Port (HTTPS / Selkies)",
+      "host": "3001",
+      "container": "3001",
+      "protocol": "tcp",
+      "description": "HTTPS port of the Selkies WebUI (self-signed cert). This is the default WebUI, because the browser only allows clipboard access over HTTPS. Accept the self-signed certificate once.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "WebUI Port (HTTP / Selkies)",
+      "host": "3000",
+      "container": "3000",
+      "protocol": "tcp",
+      "description": "HTTP port of the Selkies WebUI. For a reverse proxy that terminates TLS in front of the container, not for direct browser access: the Selkies web client requires a secure context, so opening http://IP:3000 directly shows a 'requires a secure connection (HTTPS)' error. For direct access use the HTTPS port 3001.",
+      "required": false,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "UI Language (KRUSADER_LANG)",
+      "key": "KRUSADER_LANG",
+      "value": "de = Deutsch",
+      "description": "Language for the Krusader / Kate UI (33 languages). The container reads the leading code, so the full label is fine as a value. Pick 'system' for the container default. Re-applied on every container start.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Theme (KRUSADER_THEME)",
+      "key": "KRUSADER_THEME",
+      "value": "dark",
+      "description": "Color scheme. 'dark' = Dark Mode, 'light' = Breeze.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Keyboard Layout (KEYBOARD_LAYOUT)",
+      "key": "KEYBOARD_LAYOUT",
+      "value": "us",
+      "description": "X keyboard layout loaded at session start (setxkbmap). Binds Shift so pasted upper-case text keeps its case in the web desktop, and gives the correct symbols for your layout. Default 'us' suits most users.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "WebUI Username",
+      "key": "CUSTOM_USER",
+      "value": null,
+      "description": "Optional. Username for HTTP-basic-auth on the WebUI. Leave it empty together with the password for no login. Set both fields to enable login (recommended outside trusted LANs).",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "WebUI Password",
+      "key": "PASSWORD",
+      "value": null,
+      "description": "Optional. Password for HTTP-basic-auth on the WebUI. Leave it empty together with the username for no login. Strongly recommended whenever the container is reachable from outside your LAN.",
+      "required": false,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "User ID (PUID)",
+      "key": "PUID",
+      "value": "500",
+      "description": "User-ID Krusader runs as. Default 99 (nobody on Unraid).",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Group ID (PGID)",
+      "key": "PGID",
+      "value": "500",
+      "description": "Group-ID. Default 100 (users on Unraid).",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "UMASK",
+      "key": "UMASK",
+      "value": "000",
+      "description": "Permission mask for newly created files. The default 000 lets every container user read and write them, which is what you want when other containers touch the same shares. Set 022 or 077 for stricter permissions.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [],
+  "labels": []
+}

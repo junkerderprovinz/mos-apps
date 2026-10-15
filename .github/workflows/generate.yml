@@ -1,0 +1,51 @@
+name: Generate
+
+# The templates in docker/ are built from junkerderprovinz/unraid-apps. A pull
+# request only checks that they are current; main rebuilds them every night and
+# on demand, so a change to a feed template reaches the MOS Hub without a manual
+# step here.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: junkerderprovinz/unraid-apps
+          path: feed
+
+      - name: Check
+        if: github.event_name == 'pull_request'
+        run: python3 tools/generate.py feed --check
+
+      - name: Build and commit
+        if: github.event_name != 'pull_request'
+        run: |
+          python3 tools/generate.py feed
+          git add docker
+          if git diff --cached --quiet; then
+            echo "templates are current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Rebuild templates from unraid-apps $(git -C feed rev-parse --short HEAD)"
+          git push

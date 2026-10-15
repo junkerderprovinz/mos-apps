@@ -1,0 +1,14 @@
+{
+  "arrowloop": {
+    "category": ["Backup", "Utilities"]
+  },
+  "jdownloader": {
+    "category": ["Downloader"]
+  },
+  "krusader": {
+    "category": ["Productivity", "Utilities"]
+  },
+  "matrix": {
+    "category": ["Network"]
+  }
+}
