@@ -1,0 +1,135 @@
+{
+  "name": "Euro-Office",
+  "repo": "ghcr.io/junkerderprovinz/euro-office:latest",
+  "registry": "https://github.com/junkerderprovinz/euro-office/pkgs/container/euro-office",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:80]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/euro-office.png",
+  "category": [
+    "Productivity"
+  ],
+  "project": "https://github.com/euro-office/documentserver",
+  "support": "https://github.com/junkerderprovinz/euro-office/issues",
+  "readme_url": "https://github.com/junkerderprovinz/euro-office/blob/main/README.md",
+  "description": "Euro Office Document Server - a sovereign, European document server for browser-based editing of text documents, spreadsheets and presentations. It is a maintained fork of the OnlyOffice Document Server, so it speaks the same WOPI and OnlyOffice APIs and plugs straight into OpenCloud (and Nextcloud/ownCloud). Use it to edit .docx / .xlsx / .pptx and .odt / .ods / .odp files right in your browser, without any desktop office suite.\n\nThis is a thin wrapper (github.com/junkerderprovinz/euro-office) around the official image. It lets OpenCloud show the editor under OpenCloud's own address, serves https out of the box for other clouds, and replaces the vendor's start page with one that shows what to enter in OpenCloud.\n\nThis is not a standalone app. It is the editor behind a file server: you point your cloud (e.g. the OpenCloud container) at it and edit the files stored in that cloud. On its own it only shows its start page.\n\nHow it fits together (with OpenCloud):\n• Install this container. Set a JWT secret below and remember it.\n• Click the WebUI button. The page that opens says whether the editor is ready and lists the three OpenCloud fields.\n• In the OpenCloud template set \"Web office suite\" = euro-office, \"Office document server URL\" = http://[THIS-SERVER-IP]:9900 (the address the WebUI button opened) and \"Office WOPI secret\" = the same value as the JWT secret here.\n• The New button in OpenCloud now offers documents, spreadsheets and presentations, and existing Office files open in Euro Office. OpenCloud shows the editor under its own address, so there is no certificate to accept. This needs the OpenCloud container from version 1.4.0 on.\n\nSeafile:\n• In the Seafile template set \"Web office suite\" = euro-office, \"Office document server URL\" = http://[THIS-SERVER-IP]:9900 and \"Office JWT secret\" = the same value as the JWT secret here. This needs the Seafile container from version 1.1.0 on.\n• Seafile loads the editor straight from Euro Office. If you open Seafile over https, use the https address here instead, as described for Nextcloud below.\n• Euro Office needs about 5 GB of memory while it starts. With a lower memory limit it may never finish starting.\n\nNextcloud or ownCloud:\n• They load the editor straight from Euro Office, so give them the https address, https://[THIS-SERVER-IP]:9943 (HTTPS Port under Advanced View), and accept the certificate warning once on every device. Euro Office creates that certificate itself on the first start; \"Own certificate\" below avoids the warning.\n\nFirst start:\n• The document server bundles its own database and converter and takes a minute or two to come up on the very first start. Its start page says when it is ready.\n• Leave the \"Database\" and \"Logs\" fields under Advanced View blank. Neither is required, and mounting a fresh empty folder over either one hides a directory the image ships pre-built, which stops the container from starting (see Troubleshooting below).\n\nSecurity / reverse proxy:\n• Keep \"Enable JWT\" = true (the default). The JWT secret signs every request between your cloud and the editor, so never leave it blank.\n• With OpenCloud, Euro Office needs no reverse proxy and no port opened to the outside: OpenCloud passes it through. Only OpenCloud has to be reachable.\n• \"Allow self-signed upstream\" is true by default because OpenCloud on Unraid serves a self-signed certificate. Set it to false only when your cloud has a valid certificate.\n\nOwn certificate:\n• Put the certificate and its private key into the Certificates folder (default /mnt/user/appdata/euro-office/certs), then set \"TLS certificate\" = /certs/cert.pem and \"TLS private key\" = /certs/key.pem under Advanced View. Unraid's combined *_unraid_bundle.pem works too: copy it in and enter that one file in both fields. The key must not be passphrase-protected.\n• After Apply the container log shows \"SSL enabled with cert=/certs/...\". If it still names /var/www/euro-office/Data/certs, one of the two paths is wrong and Euro Office fell back to its own certificate.\n\nTroubleshooting - container loops \"PostgreSQL ... is not accessible or does not exist\":\n• Your \"Database\" field under Advanced View has a path in it. Open the container's Edit page, switch on Advanced View, clear the \"Database\" field completely, then Apply. The bundled, already-initialised database takes over and the container starts normally within a minute.\n\nTroubleshooting - container loops \"Starting nginx nginx ...fail!\":\n• Your \"Logs\" field under Advanced View has a path in it. The image keeps its log tree at /var/log/euro-office/documentserver, so mounting an empty folder over /var/log/euro-office hides it, nginx cannot open its error log there, and the entrypoint aborts before the editor comes up. Open the container's Edit page, switch on Advanced View, clear the \"Logs\" field completely, then Apply.\n• The logs are not lost by clearing the field - the Unraid log button on the container still shows everything the server prints.\n\nTroubleshooting - documents open blank, or the browser says \"this content is blocked, contact the site owner\":\n• The OpenCloud container is older than 1.4.0. Older versions let the browser load the editor straight from Euro Office, and an http address is then blocked as mixed content. Update OpenCloud, or use https://[THIS-SERVER-IP]:9943 and accept the certificate warning in every browser.\n• Or OpenCloud uses a proxy.yaml of your own. Then it does not pass the editor through, and its log says so at startup; use the https address as above.\n\nAbout Euro Office:\n• Euro Office is an open, sovereignty-focused document server developed in Europe as an OnlyOffice-compatible fork. Because it is API-compatible, any guide for \"OnlyOffice Document Server + OpenCloud/Nextcloud\" applies here as well.\n\nProject: https://github.com/euro-office/documentserver\nThis is an independent, community-maintained Unraid packaging and is not affiliated with the Euro Office project.",
+  "donate": null,
+  "requires": null,
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/euro-office/data",
+      "container": "/var/www/euro-office/Data",
+      "mode": "rw",
+      "description": "Optional. Persistent document-server data (keys, fonts cache, forgotten files). Recommended for a permanent install; can be omitted for a purely stateless WOPI backend.",
+      "required": false
+    },
+    {
+      "name": "Certificates",
+      "host": "/mnt/cache/appdata/euro-office/certs",
+      "container": "/certs",
+      "mode": "ro",
+      "description": "Optional. Folder for your own TLS certificate and private key, used by the two fields below. Drop cert.pem and key.pem into /mnt/user/appdata/euro-office/certs on the server, then set the fields to /certs/cert.pem and /certs/key.pem. An empty folder here changes nothing.",
+      "required": false
+    }
+  ],
+  "ports": [
+    {
+      "name": "WebUI Port",
+      "host": "9900",
+      "container": "80",
+      "protocol": "tcp",
+      "description": "The WebUI button opens http://[IP]:9900. Its start page shows whether the editor is ready and the three OpenCloud fields to copy, with this server's address filled in.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "HTTPS Port",
+      "host": "9943",
+      "container": "443",
+      "protocol": "tcp",
+      "description": "Only for Nextcloud or ownCloud without OpenCloud in front. They load the editor straight from here, so the browser needs https; accept the certificate warning once on every device. OpenCloud does not need it.",
+      "required": false,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "JWT secret",
+      "key": "JWT_SECRET",
+      "value": null,
+      "description": "Pick a long random string and enter the same one as 'Office WOPI secret' in OpenCloud. It signs every request between the cloud and the editor.",
+      "required": true,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Enable WOPI",
+      "key": "WOPI_ENABLED",
+      "value": "true",
+      "description": "Keep 'true'. OpenCloud opens and saves documents over WOPI.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Enable JWT",
+      "key": "JWT_ENABLED",
+      "value": "true",
+      "description": "Require the signed JWT on every request. Keep 'true' for security. Only set 'false' for isolated testing on a trusted LAN.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Allow self-signed upstream",
+      "key": "USE_UNAUTHORIZED_STORAGE",
+      "value": "true",
+      "description": "Lets the editor fetch and save documents from a cloud with a self-signed certificate, which is what OpenCloud on Unraid serves by default. Set 'false' only when your cloud has a valid certificate.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "TLS certificate",
+      "key": "SSL_CERTIFICATE_PATH",
+      "value": null,
+      "description": "Leave blank to use the certificate Euro Office creates for itself. For your own, enter its path inside the container, e.g. /certs/cert.pem (not the /mnt/user/... path). Unraid's combined *_unraid_bundle.pem holds certificate and key in one file: enter that same file here and in 'TLS private key'. If either path is wrong, Euro Office falls back to its own certificate and says so in the log.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "TLS private key",
+      "key": "SSL_KEY_PATH",
+      "value": null,
+      "description": "Leave blank to use the certificate Euro Office creates for itself. Otherwise the path inside the container to the key that belongs to 'TLS certificate', e.g. /certs/key.pem. The key must not be passphrase-protected (create it with openssl's -nodes option).",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Send HSTS header",
+      "key": "ONLYOFFICE_HTTPS_HSTS_ENABLED",
+      "value": "true",
+      "description": "'true' (the default) tells browsers to use https for this host for a year. It only matters with your own trusted certificate and a hostname: browsers ignore it for IP addresses and for the self-signed certificate. Set 'false' if that hostname also serves things you reach over plain http, e.g. unraid.example.com, because the rule applies to the whole hostname regardless of port.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [],
+  "labels": []
+}

@@ -1,0 +1,10 @@
+[extend]
+useDefault = true
+
+# The CouchDB setup steps in its description show `curl -u admin:PASS` with a
+# placeholder, not a credential.
+[[allowlists]]
+description = "placeholder credentials in template descriptions"
+condition = "AND"
+paths = ['''^docker/couchdb\.json$''']
+regexes = ['''-u admin:PASS\b''']

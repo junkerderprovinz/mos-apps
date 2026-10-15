@@ -2,6 +2,12 @@
   "arrowloop": {
     "category": ["Backup", "Utilities"]
   },
+  "couchdb": {
+    "category": ["Utilities"]
+  },
+  "euro-office": {
+    "category": ["Productivity"]
+  },
   "excalidraw": {
     "category": ["Productivity"]
   },
@@ -10,6 +16,9 @@
   },
   "garage": {
     "category": ["Backup", "Hosting"]
+  },
+  "handbrake": {
+    "category": ["Media"]
   },
   "jdownloader": {
     "category": ["Downloader"]
@@ -23,13 +32,34 @@
   "matrix": {
     "category": ["Network"]
   },
+  "opencloud": {
+    "category": ["Hosting", "Productivity"]
+  },
+  "parleyport": {
+    "category": ["Network"]
+  },
+  "prusaslicer": {
+    "category": ["Productivity"]
+  },
+  "seafile": {
+    "category": ["Hosting", "Productivity"]
+  },
   "seaweedfs": {
     "category": ["Backup", "Hosting"]
+  },
+  "securo": {
+    "category": ["Productivity"]
+  },
+  "standardnotes-webui": {
+    "category": ["Productivity"]
   },
   "stellarium": {
     "category": ["Utilities"]
   },
   "trickwork": {
     "category": ["Media", "Utilities"]
+  },
+  "versitygw": {
+    "category": ["Backup", "Hosting"]
   }
 }

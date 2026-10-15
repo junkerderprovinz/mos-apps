@@ -42,6 +42,16 @@ def text(root, tag):
     return value or None
 
 
+def overview(root):
+    # The XML indents its text and some templates carry Windows line endings,
+    # both of which the hub would show verbatim.
+    value = text(root, "Overview")
+    if value is None:
+        return None
+    lines = [line.strip() for line in value.replace("\r", "").split("\n")]
+    return "\n".join(lines).strip()
+
+
 def host_path(path):
     for unraid, mos in HOST_PATHS:
         if path == unraid or path.startswith(unraid + "/"):
@@ -152,7 +162,7 @@ def convert(xml_path, overrides):
         "project": text(root, "Project"),
         "support": f"https://github.com/{repo}/issues" if repo else text(root, "Support"),
         "readme_url": text(root, "ReadMe"),
-        "description": text(root, "Overview"),
+        "description": overview(root),
         "donate": text(root, "DonateLink"),
         "requires": text(root, "Requires"),
         "paths": paths,

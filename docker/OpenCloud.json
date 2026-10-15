@@ -1,0 +1,267 @@
+{
+  "name": "OpenCloud",
+  "repo": "junkerderprovinz/opencloud:rolling",
+  "registry": "https://hub.docker.com/r/junkerderprovinz/opencloud",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "https://[IP]:[PORT:9200]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/opencloud.png",
+  "category": [
+    "Hosting",
+    "Productivity"
+  ],
+  "project": "https://opencloud.eu",
+  "support": "https://github.com/junkerderprovinz/opencloud/issues",
+  "readme_url": "https://github.com/junkerderprovinz/opencloud/blob/main/README.md",
+  "description": "OpenCloud - a modern, self-hosted file sync and share platform (a lightweight OpenCloud/ownCloud-family server) - packaged as a genuine one-click Unraid app. The official OpenCloud image has no PUID/PGID support and needs a manual init step, so a fresh install normally fails with \"permission denied\". This wrapper fixes that: it runs the one-time init for you, heals the appdata permissions and runs as your chosen PUID/PGID (99/100 = nobody/users by default).\n\nImportant, before the first start: keep every OpenCloud folder off /mnt/user.\nOpenCloud has no database. Its metadata and message bus are files that it writes all the time, and a large sync through Unraid's share layer (any /mnt/user/... path) can hang that layer. Every container that uses it hangs along, and only a reboot helps.\n• Config: the SSD pool itself, for example /mnt/cache/appdata/opencloud/config\n• Data: the SSD pool itself, for example /mnt/cache/appdata/opencloud/data\n• Files (optional, if your files don't fit on the pool): one array disk, for example /mnt/disk1/opencloud/files, with the share behind it set to that one disk\nUse the pool and disk names from your Main tab. At startup the container log warns about any path that still goes through the share layer.\n\nWhat's pre-configured:\n• One-click: auto-runs 'opencloud init' on first boot, then the server - nothing to do on the console.\n• Permission heal: root-created appdata folders are handed to your PUID/PGID automatically.\n• Serves HTTPS itself on port 9200 (self-signed by default) - no reverse proxy required.\n• Two channels via the Repository tag: :rolling (default, newest features) and :latest (stable/production). Both track OpenCloud's own upstream release automatically, no manual version bump needed.\n\nGetting started:\n• Set an Admin Password below - it is applied on the first start. Log in as user \"admin\".\n• FIRST START takes a moment: the container generates its config and a self-signed certificate. Wait for the \"OPENCLOUD IS READY\" banner in the container log, then open the WebUI.\n• Open the WebUI at https://[IP]:9200 and accept the self-signed certificate once.\n\nNotes:\n• Public URL: Unraid does NOT auto-fill the \"Public URL\" field. Set it to https://YOUR-SERVER-IP:9200 (your Unraid LAN IP), or your external https URL behind a reverse proxy. Leaving the placeholder lets the container guess its own IP so it still starts, but client logins only work reliably once it is correct.\n• Storage driver: keep it on 'posix' (the default). A blank driver or the unsupported 'local' driver makes files show up but stay greyed out (not openable/downloadable). The Data folder must sit on a filesystem with extended-attribute support - the Unraid array and cache/pool disks have it; if files stay greyed out on an exotic share, move Data to a normal appdata/cache-backed path.\n• Use a FRESH, empty Data folder. Do NOT point Data at an old OpenCloud/oCIS data directory: the on-disk layout differs between versions and the storage backends (local vs S3) are not interchangeable, so the server crash-loops (symptom in the log: search 'cannot open index, metadata missing'). There is no in-place migration between storage backends - to keep old files, start fresh and re-upload them.\n• Why rolling is the default: OpenCloud's production line is currently 7.2.x, where a single transient NATS timeout ends the whole server process. Slow storage is exactly what produces those timeouts, so the risk is real on an array-backed setup. Rolling carries the fix from 7.5.0 onwards. Production releases about every six months, so the stable line will not pick it up for a while.\n• Production channel: change the Repository tag from ':rolling' to ':latest' if you prefer OpenCloud's fully QA'd line over the newest features. Keep your appdata backed up before switching either way.\n• Reverse proxy: if you terminate TLS in front of OpenCloud, set \"OpenCloud terminates TLS\" to 'false' (advanced) and set the Public URL to your external https URL (e.g. https://cloud.example.com). Then \"Allow self-signed TLS\" can be 'false'. Your proxy must connect to the container over plain HTTP on port 9200 (not HTTPS) once \"OpenCloud terminates TLS\" is 'false'.\n• PUID/PGID default to 99/100 (nobody/users on Unraid).\n\nS3 object storage (optional, advanced):\n• OpenCloud can store file BLOBS in any S3-compatible bucket. Two genuine, actively-maintained self-hosted options: SeaweedFS (https://github.com/junkerderprovinz/unraid-apps/tree/main/seaweedfs, recommended for a single node) and Garage (https://github.com/junkerderprovinz/garage, built for multi-node clusters, runs single-node here too). AWS, Backblaze B2 and Wasabi also work. Set the \"Storage driver\" to 'decomposeds3' and fill the S3 endpoint / region / access key / secret key / bucket fields. Keep the driver on 'posix' (the default) for normal local storage - do NOT leave it blank.\n• IMPORTANT: only the file blobs go to S3. The file-tree METADATA always stays on the local Data volume - so that volume is required even with S3 and MUST be backed up. Losing it orphans your S3 objects (they are opaque IDs with no folder structure).\n• OpenCloud does NOT use a database (no MySQL/Postgres) - do not look for one. State lives in the local metadata tree plus an embedded message bus.\n\nHow to get the S3 bucket and keys:\n• SeaweedFS (self-hosted): in that template, set an Access Key and Secret Key (see its README's Security note) and optionally a Pre-create Bucket name - those become your access key, secret key and bucket directly, no separate service-account step. Endpoint is its S3 port, http://SEAWEEDFS-IP:8333, region 'default'.\n• Garage (self-hosted): in that template, set an Access Key and Secret Key (and optionally a Bucket) - pre-seeded on first boot, no separate CLI step. Endpoint is its S3 API port, http://GARAGE-IP:3900, region 'garage'.\n• AWS S3 / Backblaze B2 / Wasabi: create a bucket in the provider console, then create an access key (AWS: IAM access key; B2/Wasabi: an application/API key). Use the provider's https endpoint and the bucket's region.\n• If uploads fail with a checksum error on a non-AWS endpoint, add STORAGE_USERS_DECOMPOSEDS3_PUT_OBJECT_DISABLE_CONTENT_SHA256=true as an extra variable.\n\nSource on GitHub: https://github.com/junkerderprovinz/opencloud\nThis is an independent, community-maintained packaging of OpenCloud and is not affiliated with OpenCloud GmbH.",
+  "donate": null,
+  "requires": null,
+  "paths": [
+    {
+      "name": "Config",
+      "host": "/mnt/cache/appdata/opencloud/config",
+      "container": "/etc/opencloud",
+      "mode": "rw",
+      "description": "Persistent OpenCloud configuration (opencloud.yaml and generated secrets), created on the first start. Like Data, best given as the pool path itself, for example /mnt/cache/appdata/opencloud/config.",
+      "required": true
+    },
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/opencloud/data",
+      "container": "/var/lib/opencloud",
+      "mode": "rw",
+      "description": "Persistent OpenCloud data: file-tree metadata, the search index, the internal NATS message bus and transient upload staging (plus your files, unless you set Files below or use an S3/decomposeds3 backend). It writes to disk all the time, so keep it on an SSD or NVMe pool and give the pool path itself, for example /mnt/cache/appdata/opencloud/data. The /mnt/user/appdata default goes through Unraid's share layer unless appdata is an exclusive share, and a large sync can hang that layer until the server is rebooted. If your SSD is too small for all your files, set Files below to a single array disk and leave Data here.",
+      "required": true
+    }
+  ],
+  "ports": [
+    {
+      "name": "WebUI Port",
+      "host": "9200",
+      "container": "9200",
+      "protocol": "tcp",
+      "description": "HTTPS port of the OpenCloud WebUI / API (self-signed cert by default). Open https://[IP]:9200 and accept the certificate once.",
+      "required": true,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "Admin Password",
+      "key": "IDM_ADMIN_PASSWORD",
+      "value": null,
+      "description": "Password for the built-in 'admin' user. REQUIRED. Applied on the first start (during init). Choose a strong value - this is the login for your whole cloud.",
+      "required": true,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Public URL",
+      "key": "OC_URL",
+      "value": "https://YOUR-SERVER-IP:9200",
+      "description": "REQUIRED. The URL clients use to reach OpenCloud, and the login (OIDC) issuer. Unraid does NOT auto-fill this: replace YOUR-SERVER-IP with your Unraid server's LAN IP, e.g. https://192.168.1.10:9200 (keep the https:// and the :9200 port). Behind a reverse proxy set your external https URL instead, e.g. https://cloud.example.com. Must be https. If you leave the placeholder, the container falls back to its own IP so it still boots, but client logins may not work until you set the real address.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Allow self-signed TLS",
+      "key": "OC_INSECURE",
+      "value": "true",
+      "description": "'true' (default) accepts the container's self-signed certificate - correct for a direct Unraid install. Set 'false' when a reverse proxy provides a valid certificate.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Log Level",
+      "key": "OC_LOG_LEVEL",
+      "value": "info",
+      "description": "Verbosity of the container log.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Create Demo Users",
+      "key": "IDM_CREATE_DEMO_USERS",
+      "value": "false",
+      "description": "'true' seeds a set of demo users (alan, mary, ...) with well-known passwords - handy for testing, unsafe for real use. Keep 'false' for a real deployment.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "OpenCloud terminates TLS",
+      "key": "PROXY_TLS",
+      "value": "true",
+      "description": "'true' (default) = OpenCloud serves HTTPS itself on 9200 (self-signed) - correct for a direct Unraid install. Set 'false' when a reverse proxy terminates TLS in front of the container; then also set the Public URL to your external https URL and 'Allow self-signed TLS' to 'false'.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "App tokens (WebDAV clients)",
+      "key": "PROXY_ENABLE_APP_AUTH",
+      "value": "false",
+      "description": "'true' lets a WebDAV client sign in with a username and an APP TOKEN, created under Account -&gt; App tokens in the web interface. rclone, phone sync apps and anything else that cannot do the browser sign-in need this; without it every such request is refused with 401 before the token is even read, which looks exactly like a wrong token. It does NOT enable the account password for WebDAV - that is the separate PROXY_ENABLE_BASIC_AUTH, which stays off. A token can be revoked on its own, without changing the account password.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Branding admin app",
+      "key": "BRANDING_APP",
+      "value": "false",
+      "description": "'false' (default) = no Branding app. 'true' adds one to the web interface, where accounts with the Admin role set the instance name, slogan, logo (plus one for dark mode), favicon, login background and whether the sign-in card is light, dark or follows the browser; other accounts do not see it, and the small service behind it (proxy route /brandingsvc/) checks every change with OpenCloud and refuses theirs. The name shows in the browser tab and on the login page, the slogan on the login page and on public link pages. Saved changes apply without a restart, on the login page too; only switching this setting needs one. Switching back to 'false' removes the app and keeps the saved branding, but on the login page only your logo and background remain. With your own /etc/opencloud/proxy.yaml the app turns on only if that file has the /brandingsvc/ route. With your own IDP_ASSET_PATH the login page keeps its own title, footer, favicon and card, and adding the first login background, or removing it, needs a restart. See the README 'Branding' section.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "User ID",
+      "key": "PUID",
+      "value": "500",
+      "description": "User-ID OpenCloud runs as. Default 99 (nobody on Unraid). The wrapper heals appdata ownership to match on start.",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Group ID",
+      "key": "PGID",
+      "value": "500",
+      "description": "Group-ID. Default 100 (users on Unraid).",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Storage driver",
+      "key": "STORAGE_USERS_DRIVER",
+      "value": "posix",
+      "description": "How OpenCloud stores your files. Keep 'posix' (the default) for a normal local install - files live on the Data volume. Choose 'decomposeds3' ONLY to keep file blobs in an S3 bucket (then fill the five S3 fields below); even then the metadata tree stays on the local Data volume and must be backed up. Do NOT leave this blank and never type 'local' - both break file access (files appear but are greyed out and cannot be opened or downloaded). The driver is fixed at first start; to change it, start with a fresh Data folder.",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 endpoint",
+      "key": "STORAGE_USERS_DECOMPOSEDS3_ENDPOINT",
+      "value": null,
+      "description": "S3 API endpoint URL. Self-hosted SeaweedFS: the internal http URL on its S3 port 8333, e.g. http://192.168.1.10:8333. Self-hosted Garage: its S3 API port 3900, e.g. http://192.168.1.10:3900. AWS/B2/Wasabi: their https endpoint. Only used when the driver above is 'decomposeds3'.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 region",
+      "key": "STORAGE_USERS_DECOMPOSEDS3_REGION",
+      "value": "default",
+      "description": "Bucket region. Use 'default' for self-hosted SeaweedFS, 'garage' for self-hosted Garage (its default region), or your provider's region (e.g. eu-central-1) for AWS/B2/Wasabi. Only used with the 'decomposeds3' driver.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 access key",
+      "key": "STORAGE_USERS_DECOMPOSEDS3_ACCESS_KEY",
+      "value": null,
+      "description": "Access key ID for the bucket. Self-hosted SeaweedFS/Garage: the Access Key you set on that container's template directly. AWS: an IAM access key; B2/Wasabi: an application/API key.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 secret key",
+      "key": "STORAGE_USERS_DECOMPOSEDS3_SECRET_KEY",
+      "value": null,
+      "description": "The secret that pairs with the access key. Self-hosted SeaweedFS/Garage: the Secret Key you set on that container's template directly. Stored masked.",
+      "required": false,
+      "mask": true,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "S3 bucket",
+      "key": "STORAGE_USERS_DECOMPOSEDS3_BUCKET",
+      "value": null,
+      "description": "Name of the S3 bucket to store blobs in. Create it FIRST - the container does not. SeaweedFS: use its own 'Pre-create Bucket' template field. Garage: use its own 'Bucket' template field. Either way, or with any S3 tool. AWS/B2/Wasabi: create a bucket in the provider console. Enter that exact name here.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Web office suite",
+      "key": "OFFICE",
+      "value": "off",
+      "description": "Turns on editing documents in the browser. The editor runs as its own container, for example the Euro Office template. Choices: off, euro-office, collabora, onlyoffice. See the README section 'Web office'.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Office document server URL",
+      "key": "OFFICE_SERVER_URL",
+      "value": null,
+      "description": "Address of the Euro Office container on your network, the one its WebUI button opens, e.g. http://192.168.1.10:9900. OpenCloud passes the editor through its own address, so plain http works and there is no certificate to accept. For Collabora or OnlyOffice, enter their https address.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Office WOPI secret",
+      "key": "OFFICE_WOPI_SECRET",
+      "value": null,
+      "description": "The same text as the JWT secret in the Euro Office container. If they differ, documents fail with 'document security token is not correctly formed'. Collabora does not need it.",
+      "required": false,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Full-text search (Tika)",
+      "key": "FULLTEXT_SEARCH",
+      "value": "false",
+      "description": "Search inside file CONTENTS (PDF, Word, Excel, ...), not just file names. 'false' (default) = OpenCloud's normal name/metadata search. 'true' = content search via Apache Tika. Tika ALWAYS runs as a SEPARATE container that you install and point to below: install a Tika template from Community Applications (search 'Tika'), image apache/tika, port 9998 (a '-full' tag also OCRs scanned images). NOTE: only files uploaded or changed AFTER you enable this are content-indexed; existing files are not re-indexed automatically (re-upload or edit them). See the README 'Full-text search' section.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Tika server URL",
+      "key": "TIKA_URL",
+      "value": null,
+      "description": "Network-reachable URL of your Apache Tika container, e.g. http://192.168.1.10:9998. Only used when 'Full-text search (Tika)' is 'true'.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [],
+  "labels": []
+}

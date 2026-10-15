@@ -1,0 +1,38 @@
+{
+  "name": "StandardNotes-WebUI",
+  "repo": "standardnotes/web:latest",
+  "registry": "https://hub.docker.com/r/standardnotes/web",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:3001]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/standardnotes-webui.png",
+  "category": [
+    "Productivity"
+  ],
+  "project": "https://standardnotes.com",
+  "support": "https://github.com/junkerderprovinz/unraid-apps/issues",
+  "readme_url": "https://github.com/junkerderprovinz/unraid-apps/blob/main/standardnotes-webui/README.md",
+  "description": "Standard Notes: browser web client for Unraid (community template).\nRuns the official standardnotes/web image as a static-served web app\non port 80 inside the container, exposed on host port 3001 by default\nto avoid clashing with the Standard Notes server's :3000 API gateway.\n\nIMPORTANT: This template only ships the WEB CLIENT. You still need a\nrunning Standard Notes backend (see the companion folder\nhttps://github.com/junkerderprovinz/unraid-apps/tree/main/standardnotes-server\nin this template repo, container name \"StandardNotes-Server\").\nThe web client itself does not host a sync server. It is just the\nbrowser UI.\n\nConfiguring the sync server:\nThe official standardnotes/web image is configured at RUNTIME from\nthe browser, not via env vars. After opening the web app, click\n\"Advanced options\" on the sign-in / sign-up screen and set\nCustom Sync Server = https://standardnotesserver.mydomain.tld (your own\nbackend URL). The official Docker docs only document\n\"docker run -d -p 3000:80 standardnotes/web\", and no sync-server env\nvar is exposed, so this template intentionally does not invent one.\n\nRecommended reverse-proxy setup (Nginx Proxy Manager):\nDomain: app.standardnotes.mydomain.tld\nForward Hostname/IP: this container's Unraid IP\nForward Port: 3001 (the host port chosen below)\nForce SSL + Let's Encrypt + HTTP/2 ON.\nThen in the web app, set Custom Sync Server =\nhttps://standardnotesserver.mydomain.tld (the BACKEND domain, not the\nweb-app domain).\n\nNotes:\n• UNOFFICIAL community template. Standard Notes does not provide\nsupport for self-hosted setups beyond the official Docker docs at\nhttps://standardnotes.com/help/self-hosting/web-app.\n• Self-hosting the web client does NOT unlock paid / subscription\nStandard Notes features. Subscription-only client features\n(extended editors, advanced themes, Files quota, Listed, etc.)\nare gated by Standard Notes' own licensing checks in the official\nclients. This template deploys the upstream image as-is and does\nNOT patch, bypass, or otherwise modify those checks.\n• Always reach the web client through your HTTPS reverse proxy.\nThe container serves plain HTTP on port 80 internally, but the\nbrowser MUST load it over HTTPS, because Standard Notes uses WebCrypto\n(window.crypto.subtle) for account key derivation, and browsers\nonly expose it on secure contexts. Opening the web app over\nhttp://[unraid-ip]:[port]/ will fail at sign-up with\n\"crypto.subtle is undefined\". HTTPS also avoids mix-content\nblocks on API calls to the HTTPS backend.\nDetailed README (full setup & options): https://github.com/junkerderprovinz/unraid-apps/blob/main/standardnotes-webui/README.md",
+  "donate": null,
+  "requires": "A separately running Standard Notes backend (standardnotes/server) reachable over HTTPS via your reverse proxy. See the companion folder https://github.com/junkerderprovinz/unraid-apps/tree/main/standardnotes-server in this template repo for the matching backend template.",
+  "paths": [],
+  "ports": [
+    {
+      "name": "WebUI Port",
+      "host": "3001",
+      "container": "80",
+      "protocol": "tcp",
+      "description": "Host port for the Standard Notes web client (container listens on 80). Default 3001, because the backend uses 3000 on the same Unraid host, so the WebUI takes a different port. If you give this container its own custom IP on br0/macvlan, the host port is unused and you can leave it at the default; your reverse proxy forwards directly to the container IP on port 80. Always put the web app behind an HTTPS reverse proxy: opening it over plain http://[ip]:[port]/ breaks account creation (crypto.subtle is undefined).",
+      "required": true,
+      "mask": false
+    }
+  ],
+  "variables": [],
+  "devices": [],
+  "labels": []
+}

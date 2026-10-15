@@ -1,0 +1,338 @@
+{
+  "name": "Securo",
+  "repo": "junkerderprovinz/securo:latest",
+  "registry": "https://hub.docker.com/r/junkerderprovinz/securo",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "bash",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:8080]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/securo.png",
+  "category": [
+    "Productivity"
+  ],
+  "project": "https://github.com/securo-finance/securo",
+  "support": "https://github.com/junkerderprovinz/securo/issues",
+  "readme_url": "https://github.com/junkerderprovinz/securo/blob/main/README.md",
+  "description": "Securo is a self-hosted personal finance manager: accounts, transactions, budgets, goals, assets and reports, with imports from OFX, QIF, CAMT and CSV and optional bank sync for European, US and Brazilian banks. Upstream runs it as six containers; this image puts the official backend and web app, the Celery worker and the scheduler into one.\n\nGetting started:\n• PostgreSQL already running? Enter its host, user and password. It needs pgvector, which pgvector/pgvector:pg16 and the PostgreSQL image Immich uses both have and the plain postgres image does not. Securo creates its database on the first start if the user may.\n• Redis already running? Enter its host. If other apps use database 0 on it, give Securo another number under Redis database.\n• No PostgreSQL or Redis? Set Built-in PostgreSQL and Built-in Redis to true and leave their host fields empty.\n• Set App address to the address you open Securo on. Bank sync and single sign-on send you back there.\n• The first start creates the tables, which takes under a minute. Securo is ready when the log says SECURO IS READY. Then open the web app and create your account.\n\nPasskeys only work over HTTPS on a domain, not on http://IP:port. Behind a reverse proxy, set Trusted proxies to 2.\n\nSource on GitHub: https://github.com/junkerderprovinz/securo\nThis is an independent packaging of Securo and is not affiliated with the Securo project.",
+  "donate": "https://buymeacoffee.com/junkerderprovinz",
+  "requires": "A PostgreSQL server with pgvector and a Redis server, or Built-in PostgreSQL and Built-in Redis set to true.",
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/securo",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Attachments, secrets.env with the generated secret key, the secrets folder for an Enable Banking key and, with Built-in PostgreSQL and Redis, their data.",
+      "required": true
+    }
+  ],
+  "ports": [
+    {
+      "name": "WebUI Port",
+      "host": "3000",
+      "container": "8080",
+      "protocol": "tcp",
+      "description": "Port of the Securo web app.",
+      "required": true,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "App address",
+      "key": "FRONTEND_URL",
+      "value": null,
+      "description": "The address you open Securo on, such as http://192.168.1.10:3000 or https://securo.example.com. Bank sync and single sign-on send you back there.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Built-in PostgreSQL",
+      "key": "BUILTIN_POSTGRES",
+      "value": "false",
+      "description": "true runs PostgreSQL 16 with pgvector inside this container, with its data in the Data folder. Leave it false to use your own PostgreSQL.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Database host",
+      "key": "POSTGRES_HOST",
+      "value": null,
+      "description": "IP or name of your PostgreSQL server. It needs pgvector. Leave it empty with Built-in PostgreSQL.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Database user",
+      "key": "POSTGRES_USER",
+      "value": "postgres",
+      "description": "A user that may create databases, or the owner of a database you created for Securo. Not used with Built-in PostgreSQL.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Database password",
+      "key": "POSTGRES_PASSWORD",
+      "value": null,
+      "description": "Password of the database user. It must not contain @ or %. Not used with Built-in PostgreSQL.",
+      "required": false,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Built-in Redis",
+      "key": "BUILTIN_REDIS",
+      "value": "false",
+      "description": "true runs Redis inside this container. Leave it false to use your own Redis.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Redis host",
+      "key": "REDIS_HOST",
+      "value": null,
+      "description": "IP or name of your Redis server. Leave it empty with Built-in Redis.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Registration",
+      "key": "REGISTRATION_ENABLED",
+      "value": "true",
+      "description": "Whether new people can sign up. Set it to false once your own account exists.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Database port",
+      "key": "POSTGRES_PORT",
+      "value": "5432",
+      "description": "Port of your PostgreSQL server.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Database name",
+      "key": "POSTGRES_DB",
+      "value": "securo",
+      "description": "Created on the first start if it does not exist and the user may create databases.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Redis port",
+      "key": "REDIS_PORT",
+      "value": "6379",
+      "description": "Port of your Redis server.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Redis password",
+      "key": "REDIS_PASSWORD",
+      "value": null,
+      "description": "Only when your Redis server asks for one.",
+      "required": false,
+      "mask": true,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Redis database",
+      "key": "REDIS_DB",
+      "value": "0",
+      "description": "Database number on your Redis server. Give Securo one no other app uses, since its task queue shares the name every Celery app uses.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Trusted proxies",
+      "key": "TRUSTED_PROXY_HOPS",
+      "value": "1",
+      "description": "How many proxies stand in front of Securo, counting the one inside this container. 1 without a reverse proxy, 2 behind one. The login rate limit counts visitors by the address this finds.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Secret key",
+      "key": "SECRET_KEY",
+      "value": null,
+      "description": "Signs the login tokens. Leave it empty to get a generated one, kept in secrets.env. Changing it signs everyone out.",
+      "required": false,
+      "mask": true,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Enable Banking app ID",
+      "key": "ENABLE_BANKING_APP_ID",
+      "value": null,
+      "description": "Bank sync for about 2500 European banks. Put the application's private key into the secrets folder of the Data folder as enable_banking_private.pem. The redirect URL to register is your App address followed by /oauth/callback, over https.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "SimpleFIN",
+      "key": "SIMPLEFIN_ENABLED",
+      "value": "false",
+      "description": "Bank sync for US and other banks through the SimpleFIN Bridge. You paste a setup token into Securo under Accounts.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "SimpleFIN bridge",
+      "key": "SIMPLEFIN_API_URL",
+      "value": "https://beta-bridge.simplefin.org",
+      "description": "The beta bridge hands out demo tokens for trying it. For real banks use https://bridge.simplefin.org.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Pluggy client ID",
+      "key": "PLUGGY_CLIENT_ID",
+      "value": null,
+      "description": "Bank sync for Brazilian banks, from dashboard.pluggy.ai.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Pluggy client secret",
+      "key": "PLUGGY_CLIENT_SECRET",
+      "value": null,
+      "description": "The client secret that belongs to the Pluggy client ID.",
+      "required": false,
+      "mask": true,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "OIDC",
+      "key": "OIDC_ENABLED",
+      "value": "false",
+      "description": "Sign-in through Authentik, Pocket ID or another OIDC provider. The redirect URI to register is your App address followed by /api/auth/oidc/callback.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "OIDC provider name",
+      "key": "OIDC_PROVIDER_NAME",
+      "value": "OIDC",
+      "description": "Shown on the sign-in button.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "OIDC discovery URL",
+      "key": "OIDC_DISCOVERY_URL",
+      "value": null,
+      "description": "Ends in /.well-known/openid-configuration.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "OIDC client ID",
+      "key": "OIDC_CLIENT_ID",
+      "value": null,
+      "description": "From the application you created at your provider.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "OIDC client secret",
+      "key": "OIDC_CLIENT_SECRET",
+      "value": null,
+      "description": "From the application you created at your provider.",
+      "required": false,
+      "mask": true,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Password sign-in",
+      "key": "LOCAL_AUTH_ENABLED",
+      "value": "true",
+      "description": "false allows only OIDC sign-in. Securo refuses to start that way until OIDC is fully set up.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Open Exchange Rates app ID",
+      "key": "OPENEXCHANGERATES_APP_ID",
+      "value": null,
+      "description": "Optional key for exchange rates between your currencies, from openexchangerates.org.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "description": "User that owns the files in the Data folder. 99 is nobody on Unraid.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "description": "Group that owns the files in the Data folder. 100 is users on Unraid.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [],
+  "labels": []
+}
