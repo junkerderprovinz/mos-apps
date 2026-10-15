@@ -30,7 +30,7 @@ The templates are built from the Unraid templates in [unraid-apps](https://githu
 
 ## Changing a template
 
-Edit the template in unraid-apps, not the files in `docker/`. A workflow here rebuilds them every night. To build them by hand:
+Edit the template in unraid-apps, not the files in `docker/` or `images/`. A workflow here rebuilds them every night. To build them by hand:
 
 ```sh
 python3 tools/generate.py ../unraid-apps

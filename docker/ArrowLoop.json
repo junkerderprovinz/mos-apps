@@ -10,7 +10,7 @@
   "post_parameters": null,
   "cpu_set": null,
   "web_ui_url": "http://[IP]:[PORT:8422]/",
-  "icon": "https://raw.githubusercontent.com/junkerderprovinz/unraid-apps/main/arrowloop/icon.png",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/arrowloop.png",
   "category": [
     "Backup",
     "Utilities"

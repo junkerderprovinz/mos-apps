@@ -1,6 +1,6 @@
 name: Generate
 
-# The templates in docker/ are built from junkerderprovinz/unraid-apps. A pull
+# docker/ and images/ are built from junkerderprovinz/unraid-apps. A pull
 # request only checks that they are current; main rebuilds them every night and
 # on demand, so a change to a feed template reaches the MOS Hub without a manual
 # step here.
@@ -40,7 +40,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           python3 tools/generate.py feed
-          git add docker
+          git add docker images
           if git diff --cached --quiet; then
             echo "templates are current"
             exit 0

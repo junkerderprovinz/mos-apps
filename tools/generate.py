@@ -16,6 +16,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+RAW = "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main"
 
 # MOS has no user share. Appdata lives on a pool, and its docs ask templates to
 # point at /mnt/cache so they work the same on every install.
@@ -165,25 +166,32 @@ def main():
     args = parser.parse_args()
 
     apps = json.loads((ROOT / "apps.json").read_text(encoding="utf-8"))
-    out = ROOT / "docker"
-    out.mkdir(exist_ok=True)
 
+    # The icons are copied rather than linked, so the repository holds
+    # everything the hub shows and keeps working if unraid-apps moves.
     wanted = {}
     for app, overrides in apps.items():
         template = convert(args.feed / app / f"{app}.xml", overrides)
-        wanted[f"{template['name']}.json"] = json.dumps(template, indent=2, ensure_ascii=False) + "\n"
+        template["icon"] = f"{RAW}/images/{app}.png"
+        wanted[f"docker/{template['name']}.json"] = (
+            json.dumps(template, indent=2, ensure_ascii=False) + "\n"
+        ).encode("utf-8")
+        wanted[f"images/{app}.png"] = (args.feed / app / "icon.png").read_bytes()
 
     stale = []
     for name, content in wanted.items():
-        target = out / name
-        if not target.exists() or target.read_text(encoding="utf-8") != content:
+        target = ROOT / name
+        if not target.exists() or target.read_bytes() != content:
             stale.append(name)
             if not args.check:
-                target.write_text(content, encoding="utf-8", newline="\n")
-    for leftover in sorted(p.name for p in out.glob("*.json") if p.name not in wanted):
-        stale.append(leftover)
-        if not args.check:
-            (out / leftover).unlink()
+                target.parent.mkdir(exist_ok=True)
+                target.write_bytes(content)
+    present = [p for d in ("docker", "images") for p in (ROOT / d).glob("*") if p.is_file()]
+    for leftover in sorted(p.relative_to(ROOT).as_posix() for p in present):
+        if leftover not in wanted:
+            stale.append(leftover)
+            if not args.check:
+                (ROOT / leftover).unlink()
 
     if args.check and stale:
         print("out of date: " + ", ".join(stale), file=sys.stderr)
