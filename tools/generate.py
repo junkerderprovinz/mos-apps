@@ -254,18 +254,18 @@ def main():
     present = [
         p for d in ("docker", "images", ".github/readme-icons") for p in (ROOT / d).glob("*") if p.is_file()
     ]
-    for leftover in sorted(p.relative_to(ROOT).as_posix() for p in present):
-        if leftover not in wanted:
-            stale.append(leftover)
-            if not args.check:
-                (ROOT / leftover).unlink()
+    removed = [p for p in sorted(p.relative_to(ROOT).as_posix() for p in present) if p not in wanted]
+    stale += removed
+    if not args.check:
+        for leftover in removed:
+            (ROOT / leftover).unlink()
 
     if args.check and stale:
         print("out of date: " + ", ".join(stale), file=sys.stderr)
         print("run: python tools/generate.py <unraid-apps checkout>", file=sys.stderr)
         return 1
     for name in stale:
-        print(f"updated {name}")
+        print(f"{'removed' if name in removed else 'updated'} {name}")
     return 0
 
 
