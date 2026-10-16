@@ -26,6 +26,12 @@
   "juicefs": {
     "category": ["Backup", "Hosting"]
   },
+  "knightloader": {
+    "category": ["Downloader"],
+    "set": {
+      "extra_parameters": "--restart=unless-stopped"
+    }
+  },
   "krusader": {
     "category": ["Productivity", "Utilities"]
   },
