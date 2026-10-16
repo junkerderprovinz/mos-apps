@@ -2,6 +2,51 @@
   "arrowloop": {
     "category": ["Backup", "Utilities"]
   },
+  "bombvault": {
+    "xml": "my-BombVault.xml",
+    "category": [
+      "Backup"
+    ],
+    "note": "On MOS: Host Data is the cache pool (/mnt/cache), so BombVault reaches every container whose appdata lives there and writes its backups there too. The Unraid flash backup and Unraid notifications do not exist on MOS. VM and ZFS backups run over SSH: enable SSH under Settings, Network, Network Services and add BombVault's key (Settings, Integrations, Host SSH) to root's authorized_keys.",
+    "set": {
+      "extra_parameters": "--restart=unless-stopped --hostname=bombvault --add-host=host.docker.internal:host-gateway",
+      "requires": "Set APP_KEY to 64 lowercase hex characters before the first start, for example from the MOS terminal: openssl rand -hex 32. Keep it safe: without it the encrypted backups cannot be restored."
+    },
+    "paths": {
+      "/host/user": "/mnt/cache"
+    },
+    "drop_paths": [
+      "/host/boot"
+    ],
+    "env": [
+      {
+        "key": "PLATFORM",
+        "name": "PLATFORM",
+        "value": "generic",
+        "display": "advanced",
+        "description": "Which host BombVault assumes. MOS runs as generic: no Unraid flash, no Unraid notifier."
+      },
+      {
+        "key": "HOST_SOURCE_ROOT",
+        "value": "/mnt/cache",
+        "description": "The host path mounted as Host Data. Change it together with Host Data if your appdata lives on another pool."
+      },
+      {
+        "key": "DATA_ROOT_SEGMENTS",
+        "name": "DATA_ROOT_SEGMENTS",
+        "value": "appdata",
+        "display": "advanced",
+        "description": "Folder names that mark a bind mount as a container's data. appdata matches /mnt/cache/appdata/<app>."
+      },
+      {
+        "key": "LIBVIRT_URI",
+        "name": "LIBVIRT_URI",
+        "value": null,
+        "display": "advanced",
+        "description": "Optional libvirt URI. Leave empty to reach MOS' libvirt over SSH through host.docker.internal."
+      }
+    ]
+  },
   "couchdb": {
     "category": ["Utilities"]
   },

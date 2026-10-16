@@ -105,6 +105,8 @@ def convert(xml_path, overrides):
         if kind in ("Path", "Port") and not value and not required:
             continue
 
+        if kind == "Path" and target in overrides.get("drop_paths", []):
+            continue
         if kind == "Path":
             paths.append({
                 "name": name,
@@ -144,6 +146,16 @@ def convert(xml_path, overrides):
                             "description": description, "required": required})
         elif kind == "Label":
             labels.append({"name": name, "key": target, "value": value, "description": description})
+
+    # A variable the MOS template needs in another form, or that the Unraid
+    # template does not have at all.
+    for change in overrides.get("env", []):
+        current = next((v for v in variables if v["key"] == change["key"]), None)
+        if current:
+            current.update(change)
+        else:
+            variables.append({"name": change["key"], "value": None, "description": "", "required": False,
+                              "mask": False, "display": "advanced", "default": None, **change})
 
     template = {
         "name": text(root, "Name"),
@@ -218,7 +230,7 @@ def main():
     # everything the hub shows and keeps working if unraid-apps moves.
     wanted = {}
     for app, overrides in apps.items():
-        template = convert(args.feed / app / f"{app}.xml", overrides)
+        template = convert(args.feed / app / overrides.get("xml", f"{app}.xml"), overrides)
         template["icon"] = f"{RAW}/images/{app}.png"
         wanted[f"docker/{template['name']}.json"] = (
             json.dumps(template, indent=2, ensure_ascii=False) + "\n"

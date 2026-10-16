@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/junkerderprovinz/mos-apps/actions/workflows/generate.yml"><img src="https://img.shields.io/github/actions/workflow/status/junkerderprovinz/mos-apps/generate.yml?branch=main&label=Generate&style=for-the-badge&logo=githubactions&logoColor=white" alt="Generate" height="36"></a>&nbsp;
-  <a href="#apps"><img src="https://img.shields.io/badge/Templates-25-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Templates" height="36"></a>&nbsp;
+  <a href="#apps"><img src="https://img.shields.io/badge/Templates-26-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Templates" height="36"></a>&nbsp;
   <a href="https://github.com/junkerderprovinz/mos-apps/commits/main"><img src="https://img.shields.io/github/last-commit/junkerderprovinz/mos-apps?branch=main&style=for-the-badge&logo=git&logoColor=white&label=Updated" alt="Last commit" height="36"></a>&nbsp;
   <a href="https://github.com/mos-nas/mos-releases"><img src="https://img.shields.io/badge/MOS-Hub-1a1a1a?style=for-the-badge&logoColor=white" alt="MOS Hub" height="36"></a>&nbsp;
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License" height="36"></a>
@@ -29,6 +29,15 @@
 
 **ArrowLoop**<br>
 Two-way file sync that shows you the plan before it touches a file, sends deletions to a trash and stops a run that would delete too much.
+
+<br clear="all">
+
+<img src=".github/readme-icons/bombvault.png" width="84" align="left" alt="BombVault">
+<a href="https://github.com/junkerderprovinz/bombvault#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+<a href="https://github.com/junkerderprovinz/bombvault/blob/main/deploy/docker-compose.generic.yml"><img src="https://img.shields.io/badge/Docker%20compose-1d63ed?style=for-the-badge&logo=docker&logoColor=white" align="right" alt="Docker compose file"></a>
+
+**BombVault**<br>
+Backup and full disaster recovery for containers, VMs and the flash, powered by restic, with one-click backup and cross-server restore.
 
 <br clear="all">
 
@@ -276,7 +285,8 @@ The templates are built from the Unraid templates in [unraid-apps](https://githu
 - There is no `TZ` field, because MOS passes the system timezone to every container.
 - Mounts drop Unraid's `slave` propagation, which Docker refuses on MOS.
 - Optional paths and ports that the Unraid template leaves empty are left out, because MOS refuses an empty host field.
-- MOS creates a missing appdata folder as root. Silo runs without Unraid's `--user 99:100` and RustFS as root, so they can write to it; n8n says in its description which `chown` to run before the first start.
+- MOS creates a missing appdata folder as root. Silo runs without Unraid's `--user 99:100` and RustFS as root, so they can write to it; n8n says in its description which `chown` to run before the first start. KnightLoader also runs without `--user`, takes over its folder as root and then drops to its own user.
+- BombVault runs as `PLATFORM=generic` with Host Data on `/mnt/cache` and no flash mount, since MOS has no Unraid flash. VM and ZFS backups go over SSH; its description says how to set that up.
 
 To change a template, edit it in unraid-apps, not the files in `docker/`, `images/`, `.github/readme-icons/` or the app list in this README. A workflow here rebuilds them every night. To build them by hand:
 
@@ -284,7 +294,7 @@ To change a template, edit it in unraid-apps, not the files in `docker/`, `image
 python3 tools/generate.py ../unraid-apps
 ```
 
-`apps.json` lists the apps that get a MOS template and their hub categories. Per app it can also set a different host path default (`paths`), replace a template field (`set`) or put a MOS note in front of the description (`note`).
+`apps.json` lists the apps that get a MOS template and their hub categories. Per app it can also set a different host path default (`paths`), leave a path out (`drop_paths`), change or add a variable (`env`), replace a template field (`set`), read another template file (`xml`) or put a MOS note in front of the description (`note`).
 
 
 ## How AI is used here

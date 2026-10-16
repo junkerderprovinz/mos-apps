@@ -1,0 +1,183 @@
+{
+  "name": "BombVault",
+  "repo": "junkerderprovinz/bombvault:latest",
+  "registry": "https://hub.docker.com/r/junkerderprovinz/bombvault",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "bash",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --hostname=bombvault --add-host=host.docker.internal:host-gateway",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "https://[IP]:[PORT:3443]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/bombvault.png",
+  "category": [
+    "Backup"
+  ],
+  "project": "https://github.com/junkerderprovinz/bombvault",
+  "support": "https://github.com/junkerderprovinz/bombvault/issues",
+  "readme_url": "https://github.com/junkerderprovinz/bombvault/blob/main/README.md",
+  "description": "On MOS: Host Data is the cache pool (/mnt/cache), so BombVault reaches every container whose appdata lives there and writes its backups there too. The Unraid flash backup and Unraid notifications do not exist on MOS. VM and ZFS backups run over SSH: enable SSH under Settings, Network, Network Services and add BombVault's key (Settings, Integrations, Host SSH) to root's authorized_keys.\n\nThe best and only backup tool you'll ever need for Unraid.\n\nOne-click backup and full disaster recovery for your Docker containers, VMs, the flash USB, ZFS datasets and any folders you point it at, powered by restic.\n\nThe restore is the star: a backed-up container or VM reappears in the Docker or VM tab exactly as before, with no reinstall and no reconfiguration. Incremental, deduplicated and always encrypted, with off-site repos (including immutable, ransomware-resistant append-only copies with tamper verification), retention, file-level restore, restore from another BombVault server, live restore progress and cancel, integrity checks and off-site DR drills, scheduling and pre/post-backup hooks, all configured in the WebUI. A single \"Backup Everything\" pass covers containers, VMs, flash, folders, ZFS datasets and BombVault's own config in one run, so one ping afterwards tells you the whole server is protected.\n\nFull documentation: https://junkerderprovinz.github.io/bombvault/",
+  "donate": "https://buymeacoffee.com/junkerderprovinz",
+  "requires": "Set APP_KEY to 64 lowercase hex characters before the first start, for example from the MOS terminal: openssl rand -hex 32. Keep it safe: without it the encrypted backups cannot be restored.",
+  "paths": [
+    {
+      "name": "Config",
+      "host": "/mnt/cache/appdata/bombvault",
+      "container": "/config",
+      "mode": "rw",
+      "description": "BombVault's own state (SQLite DB, TLS cert, restic cache).",
+      "required": true
+    },
+    {
+      "name": "Host Data",
+      "host": "/mnt/cache",
+      "container": "/host/user",
+      "mode": "rw",
+      "description": "Your Unraid storage root /mnt, which covers the user share and the cache and pool mounts, so any container's appdata is reachable wherever it lives. Backup sources and destinations both live here; pick the exact subpaths in the WebUI under Settings. Read for backup, written on restore. Read/Write - Slave, so a share or disk that mounts after the container starts (e.g. /mnt/remotes at boot) becomes visible without restarting BombVault. Keep the Access Mode at Read/Write - Slave: ZFS dataset backups read snapshots that the host mounts after BombVault starts.",
+      "required": true
+    },
+    {
+      "name": "Docker Socket",
+      "host": "/var/run/docker.sock",
+      "container": "/var/run/docker.sock",
+      "mode": "rw",
+      "description": "Root-equivalent host control: stop/start/recreate containers around backup/restore. Together with the broad /mnt mount this gives BombVault root-equivalent access to your host, so run it only on a trusted, non-exposed network.",
+      "required": true
+    }
+  ],
+  "ports": [
+    {
+      "name": "WebUI Port (HTTPS)",
+      "host": "3443",
+      "container": "3443",
+      "protocol": "tcp",
+      "description": "The BombVault WebUI (HTTPS, self-signed cert out of the box). This is the port you open.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "WebUI Port (HTTP)",
+      "host": "3000",
+      "container": "3000",
+      "protocol": "tcp",
+      "description": "Plain-HTTP port. Only used when HTTP_ONLY is set to true (i.e. behind a TLS-terminating reverse proxy). Leave at the default otherwise.",
+      "required": false,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "HTTP_ONLY",
+      "key": "HTTP_ONLY",
+      "value": "false",
+      "description": "Serve plain HTTP instead of HTTPS — only for use behind a TLS-terminating reverse proxy. false = HTTPS (recommended); true = plain HTTP on the HTTP port above. NOTE: when true, the WebUI link still points to HTTPS — open http://[IP]:[PORT:3000]/ instead (or set the container's WebUI to it).",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "APP_KEY",
+      "key": "APP_KEY",
+      "value": null,
+      "description": "REQUIRED. 64 lowercase hex chars: openssl rand -hex 32. Master key for secrets and the derived restic password; losing it makes encrypted backups unrecoverable.",
+      "required": true,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "HOST_SOURCE_ROOT",
+      "key": "HOST_SOURCE_ROOT",
+      "value": "/mnt/cache",
+      "description": "The host path mounted as Host Data. Change it together with Host Data if your appdata lives on another pool.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "BOMBVAULT_SELF_CONTAINER",
+      "key": "BOMBVAULT_SELF_CONTAINER",
+      "value": null,
+      "description": "The name of this container, so BombVault never backs up and stops itself. Leave it empty and BombVault finds its own container.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "BACKUP_MAX_HOURS",
+      "key": "BACKUP_MAX_HOURS",
+      "value": null,
+      "description": "Maximum wall-clock hours a single backup run may hold its domain lock before it is force-cancelled (a guard so a wedged run cannot block the domain forever). Leave empty for the 48h default. Raise it for very large or slow cloud backups (a run cancelled at the cap fails with 'context deadline exceeded'). Set 0 to disable the cap entirely.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Host SSH: Address",
+      "key": "LIBVIRT_HOST",
+      "value": "192.168.x.x",
+      "description": "Used by VM backups and ZFS dataset backups to run commands on this server over SSH. Leave the placeholder to use the server itself through host.docker.internal. On a custom network (br0), set this server's LAN IP instead.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Host SSH: Port",
+      "key": "LIBVIRT_SSH_PORT",
+      "value": "22",
+      "description": "SSH port of this server, usually 22.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Host SSH: User",
+      "key": "LIBVIRT_SSH_USER",
+      "value": "root",
+      "description": "SSH user, usually root.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "PLATFORM",
+      "value": "generic",
+      "description": "Which host BombVault assumes. MOS runs as generic: no Unraid flash, no Unraid notifier.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null,
+      "key": "PLATFORM"
+    },
+    {
+      "name": "DATA_ROOT_SEGMENTS",
+      "value": "appdata",
+      "description": "Folder names that mark a bind mount as a container's data. appdata matches /mnt/cache/appdata/<app>.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null,
+      "key": "DATA_ROOT_SEGMENTS"
+    },
+    {
+      "name": "LIBVIRT_URI",
+      "value": null,
+      "description": "Optional libvirt URI. Leave empty to reach MOS' libvirt over SSH through host.docker.internal.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null,
+      "key": "LIBVIRT_URI"
+    }
+  ],
+  "devices": [],
+  "labels": []
+}
