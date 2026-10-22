@@ -44,14 +44,6 @@
       "mode": "rw",
       "description": "Every share of this server, at the same path as on Unraid. The folder chooser in Settings then lists them under /mnt/user, so the download folder can be any share, for example /mnt/user/downloads. KnightLoader can then write to every share. Clear this path to keep it to the Downloads folder above.",
       "required": false
-    },
-    {
-      "name": "Watched folder",
-      "host": "/mnt/cache/downloads/knightloader-watch",
-      "container": "/watch",
-      "mode": "rw",
-      "description": "Drop a .txt link list, a .magnet, a .crawljob, a .torrent, a .dlc, .ccf or .rsdf container or an .nzb here and KnightLoader takes it. Set the watched folder in Settings to /watch to switch it on.",
-      "required": false
     }
   ],
   "ports": [
