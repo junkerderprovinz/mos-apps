@@ -47,8 +47,20 @@
       }
     ]
   },
+  "cadcraft": {
+    "category": ["Productivity"]
+  },
   "couchdb": {
     "category": ["Utilities"]
+  },
+  "deckcraft": {
+    "category": ["Productivity"]
+  },
+  "designcraft": {
+    "category": ["Productivity"]
+  },
+  "effectcraft": {
+    "category": ["Media"]
   },
   "euro-office": {
     "category": ["Productivity"]
@@ -59,8 +71,17 @@
   "featherdrop": {
     "category": ["Utilities", "Productivity"]
   },
+  "figcraft": {
+    "category": ["Productivity"]
+  },
+  "filmcraft": {
+    "category": ["Media"]
+  },
   "garage": {
     "category": ["Backup", "Hosting"]
+  },
+  "gridcraft": {
+    "category": ["Productivity"]
   },
   "handbrake": {
     "category": ["Media"]
@@ -80,6 +101,9 @@
   "krusader": {
     "category": ["Productivity", "Utilities"]
   },
+  "lightcraft": {
+    "category": ["Media"]
+  },
   "matrix": {
     "category": ["Network"]
   },
@@ -92,6 +116,12 @@
   },
   "parleyport": {
     "category": ["Network"]
+  },
+  "pdfcraft": {
+    "category": ["Productivity"]
+  },
+  "photocraft": {
+    "category": ["Media"]
   },
   "prusaslicer": {
     "category": ["Productivity"]
@@ -117,6 +147,9 @@
       "extra_parameters": "--restart=unless-stopped"
     }
   },
+  "soundcraft": {
+    "category": ["Media"]
+  },
   "standardnotes-webui": {
     "category": ["Productivity"]
   },
@@ -126,7 +159,13 @@
   "trickwork": {
     "category": ["Media", "Utilities"]
   },
+  "vectorcraft": {
+    "category": ["Media"]
+  },
   "versitygw": {
     "category": ["Backup", "Hosting"]
+  },
+  "wordcraft": {
+    "category": ["Productivity"]
   }
 }
