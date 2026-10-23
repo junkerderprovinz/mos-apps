@@ -81,7 +81,7 @@ def boolean(value):
 
 def repository_of(root):
     for tag in ("ReadMe", "Project", "Support"):
-        match = re.match(r"https://github\.com/(junkerderprovinz/[^/]+)", text(root, tag) or "")
+        match = re.match(r"https://github\.com/(junkerderprovinz/[^/#?]+)", text(root, tag) or "")
         if match:
             return match.group(1)
     return None
