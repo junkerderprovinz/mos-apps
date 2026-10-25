@@ -1,0 +1,181 @@
+{
+  "name": "RustDesk",
+  "repo": "junkerderprovinz/rustdesk:latest",
+  "registry": "https://hub.docker.com/r/junkerderprovinz/rustdesk",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:21114]/_admin/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/rustdesk.png",
+  "category": [
+    "Network",
+    "Utilities"
+  ],
+  "project": "https://github.com/junkerderprovinz/rustdesk",
+  "support": "https://github.com/junkerderprovinz/rustdesk/issues",
+  "readme_url": "https://github.com/junkerderprovinz/rustdesk/blob/main/README.md",
+  "description": "Your own RustDesk server: the ID server and the relay, with a web console, user accounts, an address book that follows you to every client and a web client in the browser. Devices can also change their ID, which the stock open-source server refuses.\n\nWhat you get:\n• Web console at /_admin/ on port 21114: devices, users, groups, address books, connection and file transfer logs\n• Log in once in the RustDesk client and your address book is on every device\n• Web client at /webclient/ for a session from any browser\n• \"Change ID\" in the client works, for the machine that registered the old ID and a free new ID\n• Encrypted connections only, by default\n\nNotes:\n• Fill in the four address fields with the name or IP your clients reach this server under.\n• The first start creates the key pair in the data folder and prints the console's admin password in the container log (search for \"Admin Password\").\n• Moving from another RustDesk server: copy id_ed25519, id_ed25519.pub and db_v2.sqlite3 into the data folder before the first start, and every device keeps its ID.\n• Clients need the ID server (port 21116), the relay (21117), the API server (http://...:21114) and the key from id_ed25519.pub.\n\nSource on GitHub: https://github.com/junkerderprovinz/rustdesk",
+  "donate": null,
+  "requires": null,
+  "paths": [
+    {
+      "name": "Server data (/data)",
+      "host": "/mnt/cache/appdata/rustdesk",
+      "container": "/data",
+      "mode": "rw",
+      "description": "Key pair (id_ed25519, id_ed25519.pub) and the device database. Keep it: a new key pair means every client has to be set up again.",
+      "required": true
+    },
+    {
+      "name": "Console data (/app/data)",
+      "host": "/mnt/cache/appdata/rustdesk/api",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "Users, groups, address books and logs of the web console.",
+      "required": true
+    }
+  ],
+  "ports": [
+    {
+      "name": "Console and web client",
+      "host": "21114",
+      "container": "21114",
+      "protocol": "tcp",
+      "description": "Web console (/_admin/), the API the clients log in to, and the web client (/webclient/). Only needed inside your network unless you want to log in from outside.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "NAT test",
+      "host": "21115",
+      "container": "21115",
+      "protocol": "tcp",
+      "description": "Lets clients find out what kind of NAT they are behind.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "ID server (TCP)",
+      "host": "21116",
+      "container": "21116",
+      "protocol": "tcp",
+      "description": "ID server and hole punching. Forward it if devices outside your network connect.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "ID server (UDP)",
+      "host": "21116",
+      "container": "21116",
+      "protocol": "udp",
+      "description": "ID server registration and hole punching over UDP.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "Relay",
+      "host": "21117",
+      "container": "21117",
+      "protocol": "tcp",
+      "description": "Relay for sessions whose devices cannot reach each other directly.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "ID server (websocket)",
+      "host": "21118",
+      "container": "21118",
+      "protocol": "tcp",
+      "description": "ID server over websocket, used by the web client.",
+      "required": false,
+      "mask": false
+    },
+    {
+      "name": "Relay (websocket)",
+      "host": "21119",
+      "container": "21119",
+      "protocol": "tcp",
+      "description": "Relay over websocket, used by the web client.",
+      "required": false,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "Relay address (RELAY)",
+      "key": "RELAY",
+      "value": null,
+      "description": "Name or IP and port of the relay as clients reach it, e.g. rustdesk.example.com:21117.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "ID server for clients",
+      "key": "RUSTDESK_API_RUSTDESK_ID_SERVER",
+      "value": null,
+      "description": "The ID server address the console hands to clients, e.g. rustdesk.example.com:21116.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Relay for clients",
+      "key": "RUSTDESK_API_RUSTDESK_RELAY_SERVER",
+      "value": null,
+      "description": "The relay address the console hands to clients, e.g. rustdesk.example.com:21117.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "API server for clients",
+      "key": "RUSTDESK_API_RUSTDESK_API_SERVER",
+      "value": null,
+      "description": "The console's address as clients reach it, e.g. http://rustdesk.example.com:21114.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Encrypted connections only (ENCRYPTED_ONLY)",
+      "key": "ENCRYPTED_ONLY",
+      "value": "1",
+      "description": "1 accepts only clients that know the server's key. 0 also lets clients without the key connect.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Login required (MUST_LOGIN)",
+      "key": "MUST_LOGIN",
+      "value": "N",
+      "description": "Y lets only clients that are logged in to the console start a session.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Console language (RUSTDESK_API_LANG)",
+      "key": "RUSTDESK_API_LANG",
+      "value": "en",
+      "description": "Language of the console's messages.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [],
+  "labels": []
+}
