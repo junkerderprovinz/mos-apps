@@ -1,0 +1,296 @@
+{
+  "name": "FileBot",
+  "repo": "junkerderprovinz/filebot:latest",
+  "registry": "https://hub.docker.com/r/junkerderprovinz/filebot",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "bash",
+  "privileged": false,
+  "extra_parameters": "--restart=unless-stopped --shm-size=1gb",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "https://[IP]:[PORT:3001]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/filebot.png",
+  "category": [
+    "Media",
+    "Utilities"
+  ],
+  "project": "https://www.filebot.net/",
+  "support": "https://github.com/junkerderprovinz/filebot/issues",
+  "readme_url": "https://github.com/junkerderprovinz/filebot/blob/main/README.md",
+  "description": "FileBot, the renamer for movies, shows, anime and music, on a Selkies web desktop. The full FileBot desktop app runs in the container and streams to your browser as H.264 video, so you need no VNC client and no local install. Built for amd64 and arm64.\n\nWhat you get:\n• FileBot 5.3 from FileBot's own package repository, updated with every weekly build. Rename, Episodes, Subtitles, SFV, Filter and List work as on a desktop.\n• The helpers FileBot matches with: MediaInfo, chromaprint for AcoustID, 7-Zip and unrar, mkvtoolnix, AtomicParsley and ffmpeg.\n• Dark Darcula theme from the first start, file dialogs that open in your media folder, and FileBot comes back by itself if you close it.\n• An optional automatic mode: FileBot's amc script checks a watch folder at a set interval and sorts new movies, shows and music into your library. It is off by default and starts in test mode, which only logs what it would do.\n\nLicense:\nFileBot is commercial software and renaming needs your own license from filebot.net. This image ships none. Put your license.txt into the appdata folder and restart, or click Rename in FileBot and paste the key. Coming from another FileBot container, copy its license.psm into the filebot folder inside appdata.\n\nNotes:\n• Open the WebUI over HTTPS on port 3001 and accept the self-signed certificate once. Port 3000 (HTTP) is for a reverse proxy that handles TLS, the Selkies client refuses to start over plain HTTP.\n• Leave WebUI Username and Password empty to run without a login on a trusted LAN. Set both to turn on the login, which you want whenever the container is reachable from outside.\n\nSource on GitHub: https://github.com/junkerderprovinz/filebot",
+  "donate": null,
+  "requires": null,
+  "paths": [
+    {
+      "name": "AppData (/config)",
+      "host": "/mnt/cache/appdata/filebot",
+      "container": "/config",
+      "mode": "rw",
+      "description": "FileBot's license, settings, rename history and cache (under /config/filebot), plus the desktop session. Put license.txt here to activate your license.",
+      "required": true
+    },
+    {
+      "name": "Media (/storage)",
+      "host": "/mnt/cache",
+      "container": "/storage",
+      "mode": "rw",
+      "description": "The folders FileBot renames and moves files in. Every file dialog opens here. Map the share that holds both your downloads and your library, so moving a file is a rename and not a copy.",
+      "required": true
+    }
+  ],
+  "ports": [
+    {
+      "name": "WebUI Port (HTTPS / Selkies)",
+      "host": "3001",
+      "container": "3001",
+      "protocol": "tcp",
+      "description": "HTTPS port of the Selkies WebUI with a self-signed certificate. Open this one in the browser and accept the certificate once.",
+      "required": true,
+      "mask": false
+    },
+    {
+      "name": "WebUI Port (HTTP / Selkies)",
+      "host": "3000",
+      "container": "3000",
+      "protocol": "tcp",
+      "description": "HTTP port of the Selkies WebUI, for a reverse proxy that handles TLS in front of the container. Opened directly in a browser it shows a 'requires a secure connection (HTTPS)' error, so use port 3001 for that.",
+      "required": false,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "WebUI Username",
+      "key": "CUSTOM_USER",
+      "value": null,
+      "description": "Username for the WebUI login. Leave it empty together with the password to run without a login.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "WebUI Password",
+      "key": "PASSWORD",
+      "value": null,
+      "description": "Password for the WebUI login. Leave it empty together with the username to run without a login. Set it whenever the container is reachable from outside your LAN.",
+      "required": false,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "User ID (PUID)",
+      "key": "PUID",
+      "value": "500",
+      "description": "User ID FileBot runs as. Default 99 (nobody on Unraid).",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Group ID (PGID)",
+      "key": "PGID",
+      "value": "500",
+      "description": "Group ID. Default 100 (users on Unraid).",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "UMASK",
+      "key": "UMASK",
+      "value": "000",
+      "description": "Permission mask for new files and folders. 000 lets every container user read and write them, which suits shares that other containers use too. Set 022 or 077 for stricter permissions.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Theme for a new appdata folder",
+      "key": "FILEBOT_THEME",
+      "value": "Darcula",
+      "description": "FileBot's look on the first start. It is written once into /config/filebot/system.properties, so a later change goes into that file.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic mode",
+      "key": "AMC_ENABLED",
+      "value": "0",
+      "description": "1 runs FileBot's amc script on the watch folder at every interval: new movies, shows and music are matched and renamed into the output folder without opening the app. It needs your license, also in test mode.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Automatic: watch folder path",
+      "key": "AMC_INPUT_DIR",
+      "value": "/watch",
+      "description": "Path inside the container the automatic mode watches, /watch or a folder under /storage such as /storage/download/complete.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: output folder path",
+      "key": "AMC_OUTPUT_DIR",
+      "value": "/output",
+      "description": "Path inside the container the automatic mode sorts into, /output or a folder under /storage such as /storage/media.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: action",
+      "key": "AMC_ACTION",
+      "value": "test",
+      "description": "What happens to a matched file. test only writes the plan into /config/filebot/amc.log and leaves every file alone, so start with it. hardlink keeps seeding torrents working when watch and output folder are on the same share.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: on conflict",
+      "key": "AMC_CONFLICT",
+      "value": "auto",
+      "description": "What to do when the target file already exists. auto replaces it only with a file of better quality.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: match mode",
+      "key": "AMC_MATCH_MODE",
+      "value": "opportunistic",
+      "description": "opportunistic also matches files whose names leave some doubt. strict only renames what FileBot is sure about.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: language",
+      "key": "AMC_LANG",
+      "value": "English",
+      "description": "Language of the titles in new file names, such as English or German.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: interval (seconds)",
+      "key": "AMC_INTERVAL",
+      "value": "1800",
+      "description": "Seconds between two looks at the watch folder.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: settle time (seconds)",
+      "key": "AMC_INPUT_STABLE_TIME",
+      "value": "10",
+      "description": "A run waits while any file in the watch folder changed within these seconds, so a download or unpack in progress is not moved half finished.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: music",
+      "key": "AMC_PROCESS_MUSIC",
+      "value": "y",
+      "description": "y also renames music files.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: artwork",
+      "key": "AMC_ARTWORK",
+      "value": "n",
+      "description": "y also fetches posters, fan art and NFO files for each movie and show.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: subtitle languages",
+      "key": "AMC_SUBTITLE_LANG",
+      "value": null,
+      "description": "Language codes for subtitles to download, separated by commas, such as en,de. Leave it empty for none.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: movie format",
+      "key": "AMC_MOVIE_FORMAT",
+      "value": null,
+      "description": "FileBot format for movies, such as {plex}. Leave it empty for FileBot's default.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: series format",
+      "key": "AMC_SERIES_FORMAT",
+      "value": null,
+      "description": "FileBot format for episodes. Leave it empty for FileBot's default.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: anime format",
+      "key": "AMC_ANIME_FORMAT",
+      "value": null,
+      "description": "FileBot format for anime. Leave it empty for FileBot's default.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: music format",
+      "key": "AMC_MUSIC_FORMAT",
+      "value": null,
+      "description": "FileBot format for music. Leave it empty for FileBot's default.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Automatic: extra options",
+      "key": "AMC_CUSTOM_OPTIONS",
+      "value": null,
+      "description": "More amc options, added to every run as written, such as --def clean=y to remove leftover folders.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [],
+  "labels": []
+}
