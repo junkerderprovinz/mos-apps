@@ -62,21 +62,11 @@
     {
       "name": "Theme (JD_THEME)",
       "key": "JD_THEME",
-      "value": "Dark",
-      "description": "Dark = monochrome Carbon #161616, Light = JD's light theme, JDDEFAULT = JDownloader's own classic look, jd-highlighter = borderless, freely-accented dark (pick the accent with JD_ACCENT below).",
+      "value": "jd-highlighter-dark",
+      "description": "jd-highlighter-dark = JD Highlighter Dark, borderless Carbon #161616 with one accent (the default, Dark means the same). jd-highlighter-light = the same design in light. plain-dark = JD Plain Dark, the plain monochrome Carbon look. Light = JD Plain Light, the same look in light. JDDEFAULT = JD Default, JDownloader's own classic look. This is only the look a new container starts with: the accent colour and the look are picked in JDownloader under Settings > User Interface, and that pick wins.",
       "required": false,
       "mask": false,
       "display": "always",
-      "default": null
-    },
-    {
-      "name": "Accent (JD_ACCENT)",
-      "key": "JD_ACCENT",
-      "value": "#ffee00",
-      "description": "Accent colour for the jd-highlighter theme (any hex, e.g. #ffee00). Only applies when Theme is set to jd-highlighter. The accent lights up checkmarks, toggles, focus, the download progress bar and primary buttons; large fills stay neutral so text stays readable at any hue. Button/progress text is auto-contrasted (dark on a light accent, light on a dark accent).",
-      "required": false,
-      "mask": false,
-      "display": "advanced",
       "default": null
     },
     {
