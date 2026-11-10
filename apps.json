@@ -50,6 +50,20 @@
   "cadcraft": {
     "category": ["Productivity"]
   },
+  "cannoncommander": {
+    "category": ["Productivity", "Utilities"],
+    "note": "On MOS: Storage is the cache pool (/mnt/cache). CannonCommander shows it as its shares, the way it shows /mnt/user on Unraid. Point it at another pool if your files live there. The Unraid state and settings do not exist on MOS, so the disk and share details stay empty.",
+    "paths": {
+      "/mnt": "/mnt/cache"
+    },
+    "targets": {
+      "/mnt": "/mnt/user"
+    },
+    "drop_paths": [
+      "/var/local/emhttp",
+      "/boot/config"
+    ]
+  },
   "castleparcel": {
     "category": ["Utilities", "Productivity"]
   },

@@ -1,0 +1,105 @@
+{
+  "name": "CannonCommander",
+  "repo": "junkerderprovinz/cannoncommander:latest",
+  "registry": "https://hub.docker.com/r/junkerderprovinz/cannoncommander",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": "--restart unless-stopped --hostname=cannoncommander --cap-add=SYS_ADMIN --cap-add=DAC_READ_SEARCH --cap-add=DAC_OVERRIDE",
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:80]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/cannoncommander.png",
+  "category": [
+    "Productivity",
+    "Utilities"
+  ],
+  "project": "https://github.com/junkerderprovinz/cannoncommander",
+  "support": "https://github.com/junkerderprovinz/cannoncommander/issues",
+  "readme_url": "https://github.com/junkerderprovinz/cannoncommander/blob/main/README.md",
+  "description": "On MOS: Storage is the cache pool (/mnt/cache). CannonCommander shows it as its shares, the way it shows /mnt/user on Unraid. Point it at another pool if your files live there. The Unraid state and settings do not exist on MOS, so the disk and share details stay empty.\n\nThe most beautiful file manager you will ever run. Also the only one you need.\n\nTwo panels side by side, the keys the classic commanders taught your fingers, and an interface polished down to the last pixel, in light or dark and in your own accent colour. F5 copies, F6 moves, F8 deletes. Copies and moves run as jobs in the background with speed and time left, and whatever you delete waits in a trash first.\n\nIt knows its way around a NAS: which files still sit on a fast cache, which disks are asleep, which permissions your shares expect. Folder compare and sync, batch rename, archives, checksums, duplicates, disk usage and a viewer and editor for almost any file are built in. Clouds and remote servers come in through rclone and open like any other folder.\n\nOn the first start the container writes a password for the user admin into its log. Sign in with it and pick your own. Users, groups, access rules, two-factor sign-in, passkeys and OIDC decide who gets to see what.",
+  "donate": "https://buymeacoffee.com/junkerderprovinz",
+  "requires": null,
+  "paths": [
+    {
+      "name": "Config",
+      "host": "/mnt/cache/appdata/cannoncommander",
+      "container": "/config",
+      "mode": "rw",
+      "description": "Holds config.yaml, the database with users, settings, jobs and the index, the thumbnail cache and rclone's configuration. Nobody can open this folder through the file manager, not even an admin.",
+      "required": true
+    },
+    {
+      "name": "Storage",
+      "host": "/mnt/cache",
+      "container": "/mnt/user",
+      "mode": "rw",
+      "description": "Your user shares, disks and pools, at the same paths as on the server. Everyone works in the user shares. The disks and pools are for admins alone, who need them to see where a file lies and to move a folder onto one disk. To browse one, add it under Settings, Sources.",
+      "required": true
+    }
+  ],
+  "ports": [
+    {
+      "name": "WebUI Port",
+      "host": "8480",
+      "container": "80",
+      "protocol": "tcp",
+      "description": "The port of the web interface. Keep it on your own network. To reach it from outside, put it behind a reverse proxy with https.",
+      "required": true,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "description": "The user CannonCommander runs as and writes new files as. 99 is Unraid's nobody, which every share expects. 0 runs it as root.",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "description": "The group for new files. 100 is Unraid's users group.",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "UMASK",
+      "key": "UMASK",
+      "value": "000",
+      "description": "The permission mask for new files and folders. 000 matches Unraid's shares, so you can still change what CannonCommander writes over SMB. 022 keeps new files writable for their owner alone.",
+      "required": true,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Unraid write access",
+      "key": "CC_UNRAID_SOCKET",
+      "value": "false",
+      "description": "Off by default. Set it to true to let admins spin disks down from the file manager and send Unraid notifications. It also needs the emhttpd socket below, and the notifications need their folder as well.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [
+    {
+      "name": "FUSE",
+      "host": "/dev/fuse",
+      "container": "/dev/fuse",
+      "description": "rclone needs it to mount remote storage. Together with the SYS_ADMIN capability under Extra Parameters it lets rclone mount inside the container, and nothing on the server changes.",
+      "required": false
+    }
+  ],
+  "labels": []
+}
