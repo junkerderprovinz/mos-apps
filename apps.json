@@ -50,6 +50,9 @@
   "cadcraft": {
     "category": ["Productivity"]
   },
+  "castleparcel": {
+    "category": ["Utilities", "Productivity"]
+  },
   "couchdb": {
     "category": ["Utilities"]
   },
@@ -67,9 +70,6 @@
   },
   "excalidraw": {
     "category": ["Productivity"]
-  },
-  "featherdrop": {
-    "category": ["Utilities", "Productivity"]
   },
   "figcraft": {
     "category": ["Productivity"]
