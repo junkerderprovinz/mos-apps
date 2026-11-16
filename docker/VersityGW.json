@@ -178,6 +178,16 @@
       "mask": false,
       "display": "advanced",
       "default": null
+    },
+    {
+      "name": "Write Through Temp Files",
+      "key": "VGW_DISABLE_OTMP",
+      "value": "false",
+      "description": "Set to true when a folder inside a bucket lives on another filesystem than the bucket, such as its own ZFS dataset or a symlink to another disk. Uploads there otherwise fail with 'internal error'. New objects are then written as named temp files and renamed, and copied where a rename cannot cross filesystems.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
     }
   ],
   "devices": [],
