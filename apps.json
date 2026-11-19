@@ -140,6 +140,9 @@
   "photocraft": {
     "category": ["Media"]
   },
+  "pocket-id": {
+    "category": ["Security", "Network"]
+  },
   "prusaslicer": {
     "category": ["Productivity"]
   },

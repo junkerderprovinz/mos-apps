@@ -1,0 +1,179 @@
+{
+  "name": "Pocket-ID",
+  "repo": "pocketid/pocket-id:v2",
+  "registry": "https://hub.docker.com/r/pocketid/pocket-id",
+  "network": "bridge",
+  "custom_ip": null,
+  "default_shell": "sh",
+  "privileged": false,
+  "extra_parameters": null,
+  "post_parameters": null,
+  "cpu_set": null,
+  "web_ui_url": "http://[IP]:[PORT:1411]/",
+  "icon": "https://raw.githubusercontent.com/junkerderprovinz/mos-apps/main/images/pocket-id.png",
+  "category": [
+    "Security",
+    "Network"
+  ],
+  "project": "https://pocket-id.org",
+  "support": "https://github.com/junkerderprovinz/unraid-apps/issues",
+  "readme_url": "https://github.com/junkerderprovinz/unraid-apps/blob/main/pocket-id/README.md",
+  "description": "A small OpenID Connect provider that signs people in with passkeys instead of passwords. Put it in front of the apps on your server that support OIDC login, from the photo library to the dashboards, and all of them share one login: a fingerprint, a face or a security key. Nobody has a password left to reuse or leak.Users, groups and the apps allowed to sign in are managed in the web interface. Data lives in SQLite in the appdata folder unless you point it at PostgreSQL.Browsers only create passkeys over HTTPS, so Pocket ID belongs behind a reverse proxy with a real domain. After the first start, open https://your-domain/setup and create the admin account with your passkey.Detailed README (reverse proxy, first admin, connecting an app): https://github.com/junkerderprovinz/unraid-apps/blob/main/pocket-id/README.md",
+  "donate": "https://buymeacoffee.com/junkerderprovinz",
+  "requires": "A domain with HTTPS in front of the container, for example through Nginx Proxy Manager. Passkeys do not work over plain HTTP or a bare IP address. Generate the encryption key before the first start and keep a copy somewhere safe: without it the stored data cannot be read.",
+  "paths": [
+    {
+      "name": "Data",
+      "host": "/mnt/cache/appdata/pocket-id",
+      "container": "/app/data",
+      "mode": "rw",
+      "description": "The SQLite database, uploaded logos and the GeoLite database. Back this folder up together with the encryption key.",
+      "required": true
+    }
+  ],
+  "ports": [
+    {
+      "name": "WebUI",
+      "host": "1411",
+      "container": "1411",
+      "protocol": "tcp",
+      "description": "The web interface and the OIDC endpoints. Point your reverse proxy here. Opened directly over http://<tower-ip>:1411 the pages load, but passkeys fail.",
+      "required": true,
+      "mask": false
+    }
+  ],
+  "variables": [
+    {
+      "name": "App URL",
+      "key": "APP_URL",
+      "value": "https://id.example.com",
+      "description": "The public address Pocket ID is reached at, with https:// and without a path. Passkeys are bound to this domain, so pick it before the first user signs up. Replace the example with your own domain.",
+      "required": true,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Encryption Key",
+      "key": "ENCRYPTION_KEY",
+      "value": null,
+      "description": "Encrypts the token signing keys and other secrets in the database. At least 16 characters; generate one with: openssl rand -base64 32. Losing it makes the existing data unreadable. To change it later, use the built-in encryption-key-rotate command rather than editing this field.",
+      "required": true,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Trust Proxy",
+      "key": "TRUST_PROXY",
+      "value": "false",
+      "description": "Set to true behind a reverse proxy so the audit log and rate limits see the visitor's address instead of the proxy's. Instead of true you can list the proxy addresses, separated by commas, for example 192.168.1.20.",
+      "required": false,
+      "mask": false,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "Database Connection String",
+      "key": "DB_CONNECTION_STRING",
+      "value": null,
+      "description": "Leave empty for SQLite in the Data folder, which is plenty for a home server. For PostgreSQL: postgres://USER:PASSWORD@HOST:5432/DBNAME. Create the database and the user first.",
+      "required": false,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "MaxMind License Key",
+      "key": "MAXMIND_LICENSE_KEY",
+      "value": null,
+      "description": "Optional. With a free GeoLite2 key from maxmind.com, the audit log shows the city and country of each sign-in. Without it, only the IP address is shown.",
+      "required": false,
+      "mask": true,
+      "display": "always",
+      "default": null
+    },
+    {
+      "name": "PUID",
+      "key": "PUID",
+      "value": "500",
+      "description": "User the app runs as. 99 is nobody on Unraid, which owns the appdata share.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "PGID",
+      "key": "PGID",
+      "value": "500",
+      "description": "Group the app runs as. 100 is users on Unraid.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Cloudflare Location Headers",
+      "key": "CLOUDFLARE_LOCATION_HEADERS",
+      "value": "false",
+      "description": "Take the sign-in location from the headers Cloudflare adds instead of GeoLite. Only switch it on when every request reaches Pocket ID through Cloudflare, since anyone else could set those headers themselves.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Audit Log Retention Days",
+      "key": "AUDIT_LOG_RETENTION_DAYS",
+      "value": "90",
+      "description": "How many days the audit log keeps sign-in events.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Disable UI Configuration",
+      "key": "UI_CONFIG_DISABLED",
+      "value": "false",
+      "description": "When true, application settings such as SMTP come from environment variables only and the settings page is read-only. Leave false to configure everything in the web interface.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Disable Analytics",
+      "key": "ANALYTICS_DISABLED",
+      "value": "false",
+      "description": "Pocket ID sends a daily heartbeat with its version and a random instance ID to analytics.pocket-id.org, so the developers can count installs. Set to true to switch it off.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Disable Version Check",
+      "key": "VERSION_CHECK_DISABLED",
+      "value": "false",
+      "description": "Set to true to stop asking GitHub for the latest release, which the admin page uses to announce updates.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    },
+    {
+      "name": "Log Level",
+      "key": "LOG_LEVEL",
+      "value": "info",
+      "description": "How much the container log shows.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
+      "default": null
+    }
+  ],
+  "devices": [],
+  "labels": []
+}
