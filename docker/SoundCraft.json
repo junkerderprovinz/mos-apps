@@ -111,5 +111,54 @@
     }
   ],
   "devices": [],
-  "labels": []
+  "labels": [
+    {
+      "name": "Dashboard Link",
+      "key": "homepage.href",
+      "value": "",
+      "description": "The address you open SoundCraft at in your browser, for example https://192.168.1.10:3001/. Dashboards that read container labels link to it."
+    },
+    {
+      "name": "Dashboard Group",
+      "key": "homepage.group",
+      "value": "Media",
+      "description": "The section dashboards that read container labels list SoundCraft under."
+    },
+    {
+      "name": "Dashboard Name",
+      "key": "homepage.name",
+      "value": "SoundCraft",
+      "description": "The name dashboards that read container labels show."
+    },
+    {
+      "name": "Dashboard Icon",
+      "key": "homepage.icon",
+      "value": "https://raw.githubusercontent.com/junkerderprovinz/unraid-apps/main/soundcraft/icon.png",
+      "description": "The logo dashboards that read container labels show."
+    },
+    {
+      "name": "Dashboard Description",
+      "key": "homepage.description",
+      "value": "Multitrack audio workstation",
+      "description": "The short line dashboards that read container labels show under the name."
+    },
+    {
+      "name": "Alt Dashboard Name",
+      "key": "glance.name",
+      "value": "SoundCraft",
+      "description": "The same name under the glance.* keys, which other dashboards read."
+    },
+    {
+      "name": "Alt Dashboard Icon",
+      "key": "glance.icon",
+      "value": "https://raw.githubusercontent.com/junkerderprovinz/unraid-apps/main/soundcraft/icon.png",
+      "description": "The same logo under the glance.* keys."
+    },
+    {
+      "name": "Alt Dashboard Description",
+      "key": "glance.description",
+      "value": "Multitrack audio workstation",
+      "description": "The same short line under the glance.* keys."
+    }
+  ]
 }

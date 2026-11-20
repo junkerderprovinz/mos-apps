@@ -295,5 +295,54 @@
     }
   ],
   "devices": [],
-  "labels": []
+  "labels": [
+    {
+      "name": "Dashboard Link",
+      "key": "homepage.href",
+      "value": "",
+      "description": "The address you open Seafile at in your browser, for example http://192.168.1.10:80/. Dashboards that read container labels link to it."
+    },
+    {
+      "name": "Dashboard Group",
+      "key": "homepage.group",
+      "value": "Cloud",
+      "description": "The section dashboards that read container labels list Seafile under."
+    },
+    {
+      "name": "Dashboard Name",
+      "key": "homepage.name",
+      "value": "Seafile",
+      "description": "The name dashboards that read container labels show."
+    },
+    {
+      "name": "Dashboard Icon",
+      "key": "homepage.icon",
+      "value": "https://raw.githubusercontent.com/junkerderprovinz/unraid-apps/main/seafile/icon.png",
+      "description": "The logo dashboards that read container labels show."
+    },
+    {
+      "name": "Dashboard Description",
+      "key": "homepage.description",
+      "value": "File sync and share",
+      "description": "The short line dashboards that read container labels show under the name."
+    },
+    {
+      "name": "Alt Dashboard Name",
+      "key": "glance.name",
+      "value": "Seafile",
+      "description": "The same name under the glance.* keys, which other dashboards read."
+    },
+    {
+      "name": "Alt Dashboard Icon",
+      "key": "glance.icon",
+      "value": "https://raw.githubusercontent.com/junkerderprovinz/unraid-apps/main/seafile/icon.png",
+      "description": "The same logo under the glance.* keys."
+    },
+    {
+      "name": "Alt Dashboard Description",
+      "key": "glance.description",
+      "value": "File sync and share",
+      "description": "The same short line under the glance.* keys."
+    }
+  ]
 }
