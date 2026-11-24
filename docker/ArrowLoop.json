@@ -55,10 +55,20 @@
       "name": "Password hash",
       "key": "ARROWLOOP_PASSWORD_HASH",
       "value": null,
-      "description": "Optional. The password is normally set in the interface, under Settings, Security, which also offers two-factor authentication and passkeys. A hash here wins over that password and cannot be changed from the interface, which makes it the way back in after a forgotten one: open this container's console, run: arrowloop hash-password -config /config/arrowloop.json, type the password twice and paste the line it prints here. Neither lives in arrowloop.json, because that file can be downloaded and restored from inside the interface.",
+      "description": "Optional. The password is normally set in the interface, under Settings, Security, which also offers two-factor authentication, passkeys and sign-in services such as Pocket ID. A hash here wins over that password and cannot be changed or reset from the interface, which makes it the way back in after a forgotten one: open this container's console, run: arrowloop hash-password -config /config/arrowloop.json, type the password twice and paste the line it prints here. Neither lives in arrowloop.json, because that file can be downloaded and restored from inside the interface.",
       "required": false,
       "mask": true,
       "display": "always",
+      "default": null
+    },
+    {
+      "name": "App address",
+      "key": "ARROWLOOP_PUBLIC_URL",
+      "value": null,
+      "description": "Optional. The address you open ArrowLoop at through your reverse proxy, such as https://arrowloop.example.com. Passkeys and sign-in services such as Pocket ID need it, because they are tied to that name.",
+      "required": false,
+      "mask": false,
+      "display": "advanced",
       "default": null
     },
     {
