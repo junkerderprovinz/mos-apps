@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/junkerderprovinz/mos-apps/actions/workflows/generate.yml"><img src="https://img.shields.io/github/actions/workflow/status/junkerderprovinz/mos-apps/generate.yml?branch=main&label=Generate&style=for-the-badge&logo=githubactions&logoColor=white" alt="Generate" height="36"></a>&nbsp;
-  <a href="#apps"><img src="https://img.shields.io/badge/Templates-43-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Templates" height="36"></a>&nbsp;
+  <a href="#apps"><img src="https://img.shields.io/badge/Templates-44-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Templates" height="36"></a>&nbsp;
   <a href="https://github.com/junkerderprovinz/mos-apps/commits/main"><img src="https://img.shields.io/github/last-commit/junkerderprovinz/mos-apps?branch=main&style=for-the-badge&logo=git&logoColor=white&label=Updated" alt="Last commit" height="36"></a>&nbsp;
   <a href="https://github.com/mos-nas/mos-releases"><img src="https://img.shields.io/badge/MOS-Hub-1a1a1a?style=for-the-badge&logoColor=white" alt="MOS Hub" height="36"></a>&nbsp;
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License" height="36"></a>
@@ -354,6 +354,15 @@ WordCraft on a Selkies web desktop, a word processor in the browser that opens a
 
 **CouchDB**<br>
 The HTTP/JSON document database behind Obsidian LiveSync, on the official 3.x image with data, config and CORS mapped so they survive a recreate or update.
+
+<br clear="all">
+
+<img src=".github/readme-icons/github-runner.png" width="84" align="left" alt="GitHub-Runner">
+<a href="https://github.com/junkerderprovinz/github-runner#readme"><img src="https://img.shields.io/badge/Repository%20%26%20ReadMe-393939?style=for-the-badge&logo=github&logoColor=white" align="right" alt="Repository &amp; ReadMe"></a>
+<a href="https://github.com/junkerderprovinz/github-runner/blob/main/compose.yaml"><img src="https://img.shields.io/badge/Docker%20compose-1d63ed?style=for-the-badge&logo=docker&logoColor=white" align="right" alt="Docker compose file"></a>
+
+**GitHub-Runner**<br>
+Self-hosted GitHub Actions runners for several repositories of a personal account in one container, removed from GitHub again when it stops.
 
 <br clear="all">
 

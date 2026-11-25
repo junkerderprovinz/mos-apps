@@ -97,6 +97,9 @@
   "garage": {
     "category": ["Backup", "Hosting"]
   },
+  "github-runner": {
+    "category": ["Utilities"]
+  },
   "gridcraft": {
     "category": ["Productivity"]
   },
