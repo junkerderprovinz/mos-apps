@@ -200,7 +200,7 @@ def readme_cards(feed, apps):
         end = source.index('<br clear="all">', start) + len('<br clear="all">')
         heading = list(re.finditer(r"^## (\w+)\n\n(\*.+\*)$", source[:start], re.M))[-1]
         # A wrapper's README lives in its folder in unraid-apps.
-        card = re.sub(r'href="([\w-]+/README\.md)"', rf'href="{FEED_URL}/blob/main/\1"', source[start:end])
+        card = re.sub(r"\]\(([\w-]+/README\.md)\)", rf"]({FEED_URL}/blob/main/\1)", source[start:end])
         groups.setdefault(heading.group(1), (heading.group(2), []))[1].append(card)
     order = [h for h in ("Apps", "Images", "Wrappers") if h in groups]
     parts = [f"## {h}\n\n{groups[h][0]}\n\n" + "\n\n".join(groups[h][1]) for h in order]
